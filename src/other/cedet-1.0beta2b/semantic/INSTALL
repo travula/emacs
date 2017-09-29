@@ -1,0 +1,18 @@
+How to install Semantic
+
+1) Byte compile semantic (optional, but recommended)
+2) Install load hooks into your .emacs file.
+
+   Follow the INSTALL file in the top level of this distribution.
+
+4) If turning everything on is too much:
+
+   Remove the first line setting the variable that turns everything on.
+   Investigate the file `semantic-load.el', and include those pieces
+   you want to use.
+
+5) To send bug reports, or participate in discussions about semantic,
+   use the mailing list cedet-semantic@@sourceforge.net via the URL:
+
+   http://lists.sourceforge.net/lists/listinfo/cedet-semantic
+

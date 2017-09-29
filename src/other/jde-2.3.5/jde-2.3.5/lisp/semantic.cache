@@ -1,0 +1,126 @@
+;; Object semantic.cache
+;; SEMANTICDB Tags save file
+(semanticdb-project-database "semantic.cache"
+  :file "semantic.cache"
+  :tables (list 
+   (semanticdb-table "jde-complete.el"
+    :file "jde-complete.el"
+    :pointmax 53877
+    :major-mode 'emacs-lisp-mode
+    :tokens '(("eldoc" include nil nil nil [2055 2071]) ("semantic-idle" include nil nil nil [2072 2096]) ("defgroup" code nil [2098 2184]) ("jde-complete-public" variable nil 0 ((const . t)) "Represent a public java modifiers" nil [2186 2254]) ("jde-complete-protected" variable nil 1 ((const . t)) "Represent a protected java modifiers" nil [2256 2330]) ("jde-complete-package" variable nil 2 ((const . t)) "Represent a package java modifiers" nil [2332 2402]) ("jde-complete-private" variable nil 3 ((const . t)) "Represent a private java modifiers" nil [2404 2474]) ("jde-complete-fields" variable nil 0 ((const . t)) "Represents the positions
+where the fields are placed." nil [2476 2564]) ("jde-complete-constructors" variable nil 1 ((const . t)) "Represents the positions
+where the constructors are placed." nil [2566 2666]) ("jde-complete-methods" variable nil 2 ((const . t)) "Represents the positions
+where the methods are placed." nil [2668 2758]) ("jde-complete-classes" variable nil 3 ((const . t)) "Represents the positions
+where the classes are placed." nil [2760 2850]) ("jde-complete-temp-process" variable nil "*Temp*" nil "Used as the name of a temporary process" nil [2852 2939]) ("jde-complete-last-compiled-class" variable nil nil nil "Contains the name of the class that was compiled last" nil [2941 3044]) ("jde-complete-current-signature" variable nil nil nil "Contains the signature of the last method inserted by 
+either `jde-complete-in-line' or `jde-complete-menu'" nil [3046 3201]) ("jde-complete-signature-buffer" variable nil "*Signature*" ((const . t)) "Buffer to display signatures" nil [3203 3290]) ("jde-complete-display-signature" variable nil nil nil "If non nil it displays the `jde-complete-current-signaure' in
+the minibuffer" nil [3292 3416]) ("jde-complete-signature-display" variable nil (list "Eldoc") nil "Display modes used to show the method signature after a completion.
+The display modes choices are using eldoc-mode(the signature shows in the
+minibuffer), a buffer(a one line buffer shows the signature and then
+dissapears), or none." nil [3418 3865]) ("jde-complete-signature-display-time" variable nil 5 nil "Amount of time in seconds to display the method signature
+in the minibuffer after a completion." nil [3867 4057]) ("jde-complete-add-space-after-method" variable nil nil ((user-visible . t)) "*If non nil it will add a space between the method
+name and the first parenthesis. i.e foo () instead of foo() when using
+the completion methods `jde-complete-in-line' and `jde-complete-menu'
+After customizing this variable, be sure to use
+`jde-complete-flush-classinfo-cache', any class information that was
+previously cache is not going to be affected by this setting." nil [4059 4525]) ("jde-complete-unique-method-names" variable nil nil nil "If non nil it will display methods with the same name
+ but with different signature only once, the signature for ths methods
+ will be the signature of the first method in the list of completions
+The list of completion is sorted in alphabetical order.
+This variable modifies the completion for `jde-complete-menu'
+and `jde-complete-in-line'. After customizing this variable,
+be sure to use `jde-complete-flush-classinfo-cache',
+any class information that was previously cache is not going to be affected by
+this setting" nil [4527 5138]) ("jde-complete-insert-method-signature" variable nil t nil "If non nil it will insert the method signature when using
+`jde-complete-in-line' and `jde-complete-menu'
+i.e. v.get(int, java.lang.String). If `jde-complete-unique-method-names'
+is non nil methods with the same name will get the signature of the first one
+in the completion list. After customizing this variable, be sure to use
+`jde-complete-flush-classinfo-cache', any class information that was
+previously cache is not going to be affected by this setting" nil [5140 5692]) ("jde-complete-display-qualified-types" variable nil t nil "If non nil use fully qualified types when displaying methods for selection,
+i.e. v.get(int, java.lang.String). If nil, use unqualified types, i.e.
+v.get(int, String). After customizing this variable, be sure to use
+`jde-complete-flush-classinfo-cache', any class information that was
+previously cache is not going to be affected by this setting." nil [5694 6134]) ("jde-complete-display-result-type" variable nil t nil "If non nil include result type when displaying methods for selection.
+After customizing this variable, be sure to use
+`jde-complete-flush-classinfo-cache', any class information that was
+previously cache is not going to be affected by this setting." nil [6136 6475]) ("jde-complete-display-throws" variable nil t nil "If non nil include thrown exceptions when displaying methods for selection.
+After customizing this variable, be sure to use
+`jde-complete-flush-classinfo-cache', any class information that was
+previously cache is not going to be affected by this setting." nil [6477 6817]) ("jde-complete-function" variable nil (quote jde-complete-menu) ((user-visible . t)) "*Function that will be invoked by the `jde-complete-select' command.
+The `jde-complete-menu' function displays completions for
+the symbol at point in a popup menu. The `jde-complete-minibuf' function
+displays completions in the minibuffer. You may also
+specify a custom function to use. The custom function must
+be an interactive function that can be called by 
+`call-interactively'." nil [6858 7504]) ("jde-complete-current-list" variable nil nil nil "The list of all the completion. Each element of the list is a list
+which car is the possible completion, and the cdr is an additional
+information about this completion." nil [7506 7717]) ("jde-complete-current-list-index" variable nil nil nil "An index to an element in jde-complete-current-list. This is used to
+cycle the list." nil [7719 7852]) ("jde-complete-valid-java-declaration-at" function nil ("point" "varname") nil "Verify that a POINT starts a valid java declaration
+for the VARNAME variable." nil [7854 8209]) ("jde-complete-double-backquotes" function nil ("varname") nil "Build a new string identical to VARNAME, except that every backquote
+`' is doubled, so that it can be used in a regex expression" nil [8213 8654]) ("jde-complete-declared-type-of" function nil ("name") nil "Find in the current buffer the java type of the variable NAME.  The
+function returns a string containing the name of the class, or nil
+otherwise. This function does not give the fully-qualified java class
+name, it just returns the type as it is declared." nil [8656 9304]) ("jde-complete-filter-fqn" function nil ("importlist") nil "Filter all the fully-qualified classnames in the import list. It uses
+the knowledge that those classnames are at the beginning of the list,
+so that it can stops at the first package import (with a star `*' at
+the end of the declaration)." nil [9306 9722]) ("jde-complete-guess-type-of" function nil ("name") nil "Guess the fully qualified name of the class NAME, using the import
+list. It returns a string if the fqn was found, or a list of possible
+packages otherwise." nil [9724 10355]) ("jde-complete-classinfo-cache" variable nil nil nil nil nil [10358 10399]) ("jde-complete-classinfo-cache-size" variable nil 50 nil "The max size of completion's cache." nil [10401 10489]) ("jde-complete-flush-classinfo-cache" function nil nil ((user-visible . t)) "Flushes all entries in the completion cache" nil [10491 10642]) ("jde-complete-flush-classes-in-cache" function nil ("class-list") nil "Flushes all the classes in CLASS-LIST as entries of cache." nil [10644 11264]) ("jde-complete-add-to-classinfo-cache" function nil ("name" "classinfo") nil (let (new-entry new-list) (if (nth jde-complete-classinfo-cache-size jde-complete-classinfo-cache) (progn (setq new-entry (list name classinfo)) (setq new-list (list new-entry nil)) (setcdr new-list (cdr jde-complete-classinfo-cache)) (setq jde-complete-classinfo-cache new-list) (message "cache is full")) (setq jde-complete-classinfo-cache (append jde-complete-classinfo-cache (list (list name classinfo)))))) nil [11266 11864]) ("jde-complete-get-from-cache" function nil ("name") nil (let ((temp (nth 0 jde-complete-classinfo-cache)) (index -1) (found nil)) (while (and temp (not found)) (setq index (1+ index)) (setq temp (nth index jde-complete-classinfo-cache)) (if (string= (car temp) name) (setq found t))) (if found (nth 1 temp) nil)) nil [11866 12203]) ("jde-complete-get-classinfo" function nil ("name" "&optional" "access-level") nil "Return the class info list for the class NAME and the ACCESS-LEVEL.
+Allowed values for access level are 0 for protected 1 for private. This
+function first checks to see if the class info is cached. If so, it returns the
+cached class info. Otherwise, it creates the class info list. Each
+element of the list returned by this function is itself a list whose
+car is a possible completion and whose cdr gives additional
+informations on the completion." nil [12206 14677]) ("jde-complete-remove-duplicates" function nil ("class-list") nil "Removes duplicates from class-list" nil [14679 15013]) ("jde-complete-memberp" function nil ("elt" "lst") nil "Returns t if elt is a memver of lst" nil [15015 15298]) ("jde-complete-get-accessible-info" function nil ("class-info" "access" "name") nil "Takes a list of class info in this format (list (list public
+info) (list protected info) (list package info) (list private
+info)).  Each info list is in the format (list (list fields)
+(list constructors) (list methods) (list inner classes)).  This
+method will return a list concatenating the fields, methods, and inner
+classes for the access level." nil [15300 18439]) ("jde-complete-invoke-get-class-info" function nil ("name" "access") nil "Invoke the method jde.util.Completion.getClassInfo(String, int)" nil [18441 18652]) ("jde-complete-get-classinfo-javacode" function nil ("name" "import" "access-level") nil "Return the java code that calls the
+jde.util.Completion.getClassInfo function with the short java class
+name NAME and the package list IMPORT where to look at." nil [18655 19323]) ("jde-complete-sort-comparison" function nil ("first" "second") nil (string< (car first) (car second)) nil [19326 19415]) ("jde-complete-get-variables" function nil ("variables") nil "Transform a list of the type (\"var\" \"java.lang.String\")
+into (\"var\" \"java.lang.Stringvar\")" nil [19417 20574]) ("jde-complete-build-completion-list" function nil ("classinfo") nil "Build a completion list from the CLASSINFO list, as returned by the
+jde.util.Completion.getClassInfo function." nil [20576 21415]) ("jde-complete-get-methods" function nil ("classinfo" "&optional" "constructor") nil (let ((end-paren (if (null jde-complete-add-space-after-method) "(" " (")) (end-parens (if (null jde-complete-insert-method-signature) (if (null jde-complete-add-space-after-method) "()" " ()") "")) prev tmp current) (while classinfo (let* ((type (car (cdr (car classinfo)))) (exceptions (jde-get-exceptions (car (last (car classinfo))))) (method (jde-complete-build-information-for-completion (car classinfo) end-paren)) (display (jde-complete-build-display-for-completion (car classinfo) end-paren constructor))) (setq current (jde-parse-get-unqualified-name (car (car classinfo)))) (if (not (and jde-complete-unique-method-names (string= prev current))) (progn (setq prev current) (setq tmp (append (list (cons display (concat (if (null jde-complete-insert-method-signature) current method) end-parens))) tmp)))) (setq classinfo (cdr classinfo)))) tmp) nil [21417 22867]) ("jde-complete-get-inner-classes" function nil ("class-info") nil "Takes as an argument a list of inner classes an return a string of
+them or nil" nil [22873 23467]) ("jde-get-exceptions" function nil ("exceptions") nil "Takes as an argument a list of EXCEPTIONS and return a string of them
+or nil" nil [23469 23859]) ("jde-complete-maybe-unqualify" function nil ("type") nil (if jde-complete-display-qualified-types type (jde-parse-get-unqualified-name type)) nil [23861 24001]) ("jde-complete-build-display-for-completion" function nil ("lst" "end-parens" "&optional" "constructor") nil "Builds the string that describes a method in a menu for selecting a completion." nil [24003 25257]) ("jde-complete-build-information-for-completion" function nil ("lst" "end-parens" "&optional" "constructor") nil "Builds the text that is inserted in the code for a particular completion." nil [25259 26019]) ("jde-complete-complete-cycle" function nil nil nil "Replace the previous completion by the next one in the list." nil [26021 27030]) ("jde-complete-insert-completion" function nil ("item") nil (if item (progn (delete-region jde-parse-current-beginning jde-parse-current-end) (insert item) (jde-complete-place-cursor) (jde-complete-display-current-signature) (set-marker jde-parse-current-end (+ (marker-position jde-parse-current-beginning) (length item))))) nil [27032 27460]) ("jde-complete-find-all-completions" function nil ("pair" "lst" "&optional" "exact-match") nil (let* (tmp chop-pos (args (nth 2 pair)) (pat (nth 1 pair)) (result nil) (first-char (substring pat 0 1))) (if (null args) (setq exact-match nil) (setq pat (concat pat args))) (if (string= pat "$") (setq pat "\\$")) (while lst (setq tmp (car (car lst))) (setq chop-pos (string-match " : " tmp)) (setq tmp (substring tmp 0 chop-pos)) (if (if exact-match (string= pat tmp) (equal 0 (string-match pat tmp))) (setq result (append result (list (car lst))))) (setq lst (cdr lst))) result) nil [27462 28178]) ("jde-complete-find-completion-for-pair" function nil ("pair" "&optional" "exact-completion" "access-level") nil (let ((type (jde-parse-eval-type-of (car pair)))) (if type (cond ((member type jde-parse-primitive-types) (error "Cannot complete primitive type: %s" type)) ((string= type "void") (error "Cannot complete return type of %s is void." (car pair))) (access-level (let ((classinfo (jde-complete-get-classinfo type access-level))) (if classinfo (if (and (string= (nth 1 pair) "") (not exact-completion)) (setq jde-complete-current-list classinfo) (setq jde-complete-current-list (jde-complete-find-all-completions pair classinfo exact-completion)))))) (t (let ((classinfo (jde-complete-get-classinfo type))) (if classinfo (if (and (string= (nth 1 pair) "") (not exact-completion)) (setq jde-complete-current-list classinfo) (setq jde-complete-current-list (jde-complete-find-all-completions pair classinfo exact-completion))))))) nil)) nil [28181 29663]) ("jde-complete-in-line" function nil nil ((user-visible . t)) "Completes the method or field name at point.  Repeating the command
+cycles through all potential completions for the name.  This function
+displays the signature of a method completion as specified by
+`jde-complete-display-current-signature' This command uses the
+Beanshell to run Java code that in turn uses Java reflection to
+determine the methods and fields defined by the class of the object at
+point. This command starts the Beanshell if necessary. Hence, you may
+experience a slight delay when using this command for the first time
+in a session or when completing a field or method of an object that
+has many methods and fields. See `jde-complete-menu' for a version of
+this command that lets you select the desired completion from a popup
+menu." nil [29666 30947]) ("jde-complete-choose-completion" function nil ("&optional" "title" "initial-input" "use-menu") nil "Display completions for the object at point in a menu if USE-MENU
+is nonil, otherwise in the minibuffer. The display comprises all of
+the possible completions for the object it was invoked on.  To
+automatically split large menus this function use `imenu--mouse-menu'
+to handle the popup menu. initial-input, whatever the user typed
+before invoking the completion" nil [30949 32340]) ("jde-cursor-posn-as-event" function nil nil nil "Returns the text cursor position as an EVENT on Emacs and the mouse
+cursor position on XEmacs." nil [32342 33263]) ("jde-complete-menu" function nil nil ((user-visible . t)) "Completes the method or field name at point.  This command displays
+a popup menu listing the potential completions for the name at
+point. Selecting a completion causes the command to use the completion
+to complete the name at point. See `jde-complete-in-line' for a
+version of this command that lets you cycle throught the potential
+completions at point." nil [33267 33697]) ("jde-complete-minibuf" function nil nil ((user-visible . t)) "Completes the method or field name at point.  This command displays
+a popup menu listing the potential completions for the name at
+point. Selecting a completion causes the command to use the completion
+to complete the name at point. See `jde-complete-in-line' for a
+version of this command that lets you cycle throught the potential
+completions at point." nil [33699 34134]) ("jde-complete-generic" function nil ("completion-type") nil "Generic implementation for jde-complete methods" nil [34136 34815]) ("jde-complete-pair" function nil ("pair" "completion-type") nil (let ((access (jde-complete-get-access pair)) completion-list) (progn (if access (setq completion-list (jde-complete-find-completion-for-pair pair nil access)) (setq completion-list (jde-complete-find-completion-for-pair pair))) (if (null completion-list) (setq completion-list (jde-complete-find-completion-for-pair (list (concat "this." (car pair)) "") nil jde-complete-private))) (if (null completion-list) (setq completion-list (jde-complete-find-completion-for-pair (list (concat "super." (car pair)) "") nil jde-complete-protected))) (if completion-list (let ((title (concat (car pair) "." (car (cdr pair)) "[...]"))) (if (null completion-type) (jde-complete-choose-completion title (car (cdr pair))) (if (string= completion-type "in-line") (progn (setq jde-complete-current-list-index -1) (jde-complete-complete-cycle)) (jde-complete-choose-completion title (car (cdr pair)) t)))) (error "No completion at this point")))) nil [34817 36374]) ("jde-complete-get-access" function nil ("pair") nil (let (access) (if (string= (car pair) "this") (setq access jde-complete-private) (if (string= (car pair) "super") (setq access jde-complete-protected))) access) nil [36376 36610]) ("jde-complete-get-pair" function nil ("pair" "op") nil (let ((tmp (list (car pair) (cadr pair)))) (if (and op (string= (car tmp) "") (not (string= (cadr tmp) ""))) (setcar tmp (cadr tmp))) (if (string= (car tmp) "") (setcar tmp "this")) tmp) nil [36612 36897]) ("jde-complete" function nil nil ((user-visible . t)) "Displays completions for the Java symbol at point.  This command
+delegates the task of displaying completions to the function specified
+by `jde-complete-function'. This allows you to select or specify the
+default method for displaying completions." nil [36899 37235]) ("define-mode-overload-implementation" code nil [37237 37472]) ("jde-complete-popup-message" function nil ("message" "buffer-or-name") ((user-visible . t)) "Split up the current window horizontally, the new buffer is exactly
+2 lines in height. Message is inserted in the new buffer.  Succesive
+calls to this method with the same buffer-or-name will delete the text
+inside the buffer and replace it with message. Message should not be
+longer than a line." nil [37474 38890]) ("jde-complete-display-current-signature" function nil nil ((user-visible . t)) "Displays the current signature: `jde-complete-current-signature'. The
+display mode will depend on the variable `jde-complete-signature-display'" nil [38926 39839]) ("jde-complete-place-cursor" function nil nil nil "Places the cursor in between the parenthesis after a
+completion. This is only done for methods that contain parameters, for
+all the other completions the cursor is place at the end." nil [39841 40316]) ("jde-complete" package nil nil nil [40318 40341]))
+    :unmatched-syntax 'nil
+    )
+   )
+  )

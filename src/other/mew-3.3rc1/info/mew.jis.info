@@ -1,0 +1,110 @@
+Info file: mew.jis.info,    -*-Text-*-
+produced by `texinfo-format-buffer'
+from file `mew.texi'
+using `texinfmt.el' version 2.38 of 3 July 1998.
+
+
+
+
+
+
+INFO-DIR-SECTION Message User Agent
+START-INFO-DIR-ENTRY
+* Mew-J: (mew.jis.info).     Messaging in the Emacs World.
+END-INFO-DIR-ENTRY
+
+
+
+
+
+
+
+Indirect:
+mew.jis.info-1: 292
+mew.jis.info-2: 52556
+mew.jis.info-3: 104362
+
+Tag table:
+(Indirect)
+Node: Top292
+Node: Overview1291
+Node: characteristic1913
+Node: Emacsen2843
+Node: modes3482
+Node: folder convention3934
+Node: configuration5788
+Node: password8243
+Node: start8994
+Node: Viewing9830
+Node: singlepart10718
+Node: multipart11584
+Node: pgp-viewing15019
+Node: retrieving17867
+Node: moving20514
+Node: sum-write22078
+Node: features23525
+Node: status-update24570
+Node: thread25219
+Node: sorting27224
+Node: illegal28463
+Node: Composing29752
+Node: header31024
+Node: cheader33455
+Node: addrbook35366
+Node: send38448
+Node: cite40414
+Node: mime-comp41816
+Node: charset-guess47331
+Node: reply49558
+Node: forward52556
+Node: resend53149
+Node: pgp-shortcut54330
+Node: mark-b-comp57106
+Node: pgp-key59330
+Node: anonymous59908
+Node: Marks60904
+Node: delete mark61761
+Node: refile mark63318
+Node: multi mark64247
+Node: review mark65055
+Node: unmark66053
+Node: mark level66371
+Node: off-line67144
+Node: mew-mark68389
+Node: Refile68780
+Node: by-folder69886
+Node: by-alist70933
+Node: by-thread72587
+Node: by-from-folder73204
+Node: by-from74139
+Node: by-newsgroups75349
+Node: by-default75587
+Node: guess-rule75895
+Node: auto-refile77427
+Node: Pick79122
+Node: condition79932
+Node: virtual81277
+Node: Quit82163
+Node: Customize82585
+Node: summary-mode83194
+Node: message-mode85901
+Node: draft-mode88010
+Node: charset90111
+Node: highlight91696
+Node: hooks92672
+Node: pop95673
+Node: imap96761
+Node: nntp97776
+Node: smtp98874
+Node: config100033
+Node: custom-misc104362
+Node: Convention104633
+Node: Implementation106050
+Node: Avail108323
+Node: ftp108570
+Node: ml108816
+Node: Copyright109361
+Node: Variable Index110366
+Node: Key Index122275
+
+End tag table

@@ -1,0 +1,23 @@
+(require 'list-operations)
+(defun filter-files-by-date
+	 (source-pattern dest-extension (&optional dest-dir))
+
+	"Filters a set of files in the current directory that match
+	 source-pattern, checks if source-file is newer than the 
+	 corresponding  destination file.  A destination file is obtained
+	 by concatenating the (optional) dest-dir, source-file sans extension,  
+	 and the dest-extension string."
+
+  (let* ((files (directory-files 
+		 "." 
+		 nil ;; nil means filename relative to "."
+		 source-pattern)))
+    (list-filter (function
+		  (lambda (source-file)
+		    (let* ((sans-ext    (file-name-sans-extension source-file))
+			   (class-file  (concat dest sans-ext dest-extension)))
+		      (file-newer-than-file-p source-file class-file)))
+		  files))))
+
+
+
