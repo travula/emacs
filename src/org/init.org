@@ -21,25 +21,20 @@
 
 * Introduction
 
-My =.emacs= configuration.
+These pages capture my emacs configuration.  
 
-#+BEGIN_SRC emacs-lisp 
-;;; Emacs lisp configuration
-;;; Venkatesh Choppella
-;;; <venkatesh.choppella@iiit.ac.in>
+The main objective of this project is to make my emacs
+configuration completely portable: 
 
-;;; Generated 
-(print "running Venkatesh init.el")
-(print "running Venkatesh init.el")
-(print "running Venkatesh init.el")
-(print "running Venkatesh init.el")
-#+END_SRC
+  - 1. Clone git repository :: =git clone https://gitlab.com/vxcg/prj/emacs/emacs.git
 
+  - 2. Make the  =init.el= file :: =make -k all=
 
-* Emacs version
+  - 3. Launch emacs ::  =emacs -q -l /path/to/init.el=.
 
+* Emacs version and set up of emacs directories
 I am using emacs version
-#+BEGIN_SRC emacs-lisp :eval t :results value :exports both
+#+BEGIN_SRC emacs-lisp :eval t :results value :exports both :tangle no
 (version)
 #+END_SRC
 
@@ -47,285 +42,116 @@ I am using emacs version
 : GNU Emacs 25.2.2 (x86_64-pc-linux-gnu, GTK+ Version 3.10.8)
 :  of 2017-05-06
 
-* COMMENT Location and structure of =~/emacs= directory
+** Key directories and files
 
+The installation makes no changes to the default user emacs
+directory stored in the variable =user-emacs-directory=.
+
+However, as a result of running this file, the elpa
+directory may be populated by the packages identified by the
+variable 
+
+* Preamble of =init.el=
+The banner prints the name of the full path of the =init.el=
+file. 
+*** Banner
 #+BEGIN_SRC emacs-lisp 
-(setq user-emacs-directory "~/emacs/")
+;;; Emacs lisp configuration
+;;; Venkatesh Choppella
+;;; <venkatesh.choppella@iiit.ac.in>
+;;; gitlab: @vxc
+
+(defmacro rval (var)
+  "Return the value of symbol VAR if it is bound, else nil."
+  `(and (boundp (quote ,var)) ,var))
+
+(message "start evaluating init file")
+
+;;; version of emacs running
+(message "emacs-version = %s" (version))
+
+;;; load-file-name is the name of the file loaded with the -l option.
+(message "load-file-name = %s" load-file-name)
+
+;;; default-directory is where emacs is launched from.
+(message "default-directory = %s" default-directory)
+
+;;; user-emacs-dir is bound to the value set at command line, 
+;;; unbound otherwise
+(message "user-emacs-dir = %s" (rval user-emacs-dir))
+
+;;; expanded-user-emacs-dir-or-nil is the expanded user-emacs-dir
+;;; if user-emacs-dir is bound, nil otherwise.
+
+(setq expanded-user-emacs-dir-or-nil
+	  (and (rval user-emacs-dir)
+		   (expand-file-name (file-name-as-directory user-emacs-dir))))
+(message "expanded-user-emacs-dir-or-nil = %s" expanded-user-emacs-dir-or-nil)
+
+;;; user-emacs-directory is where the user emacs customizations sit.
+;;; E.g., init.el will sit here.
+
+;;; user-emacs-directory is now either
+;;; the expanded user emacs dir, or if that is nil
+;;; the directory of the file loaded from emacs command line.
+(setq user-emacs-directory
+	  (or expanded-user-emacs-dir-or-nil
+		  (file-name-directory load-file-name)))
+
+(message "user-emacs-directory = %s" user-emacs-directory)
+
+(require 'package)
+
+;;; package-user-dir is the directory where user downloaded packages
+;;; are installed.
+
+;;; 'package sets is to the elpa subdirectory of the
+;;; user-emacs-directory.
+
+(message "package-user-dir = %s" package-user-dir)
+
+;;; Canonicalise the directory to a fully expanded name.
+
+(setq package-user-dir
+	  (file-name-as-directory
+	   (concat user-emacs-directory "elpa")))
+
+(message "canonicalised package-user-dir = %s" package-user-dir)
+
+;;; package-directory-list is the list of directories searched for
+;;; packages. 
+;;; Its value is set by 'package
+
+(message "package-directory-list = %s" package-directory-list)
+(message "load-path = %s" load-path)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :eval t :exports none :tangle no
-(require 'ob-sh)
-(setq org-babel-sh-command "/bin/bash")
+** Required standard libraries
 
-(setq org-babel-load-languages 
-	  '((sh . t)
-		(emacs-lisp . t))) 
-#+END_SRC
+A standard library is one that comes with the standard emacs
+distribution.
 
-The =~/emacs= and =~/.emacs.d/= directories are aliases of
-=~/sys/lib/emacs/=.  =~/emacs/= contains both emacs state
-related files and directories and also packages and other
-things.
-
-=~/emacs= has the following directories:
-
-#+BEGIN_SRC shell :session none :shebang "#!/bin/bash"  :eval t :exports both :tangle no
-ls -p -w 1
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-auto-save-list/
-custom/
-elpa/
-info/
-init.el
-init.html
-init.org
-packages/
-sav/
-state/
-test.html
-test.org
-#+end_example
-
-** Main files
-
-   - =custom/= :: This directory is for customizations for
-        various =emacs= modes, etc.  The customizations are
-        defined mode wise: one directory for each mode.
-
-   - =elpa/= :: elpa libraries.  All packages under =elpa=
-        are automatically included in =load-path=.  There is
-        no need to explicitly add them to =load-path=.  
-
-   - =git/= :: libraries directly from git.  These need to
-        be pulled  manually from their respective sites. 
-
-   - =info/= :: local installation of =info= trees.  
-
-
-   - =init.el=  :: The  emacs customization file generated
-        by tangling =init.org=.   
-
-   - =init.html=  :: The html file generated by exportig
-        =init.org=.
-
-   - =init.org= :: This file.  
-
-   - =packages/= ::    This contains packages downloaded from
-        various sources.  It has the following directories: 
-
-       + =elpa= :: downloaded from elpa.  This is symlinked
-            to =../elpa=.  All packages under =elpa= are
-            automatically included in =load-path=.  There is
-            no need to explicitly add them to =load-path=.
-
-       + =elpa-staged= :: Installed by elpa but moved into a
-            staging area.  These are not part of the
-            =load-path=.  
-
-       + =lisp= :: This directory contains vestiges of the
-            past.  It is NOT part of the =load-path=.  (This
-            is an unusual configuration.  Normally, this is
-            where the customizations sit, but in our case,
-            they sit in =custom=.
-
-       + =other= ::  emacs libraries downloaded from other
-            sources.
-
-   - =sav/= :: temporary space for saving older versions.
-
-   - =state/= :: emacs state related directories and files.
-
-
-
-** Emacs persistent state related files
-
-#+BEGIN_SRC shell :session none :shebang "#!/bin/bash"  :eval t :exports both  :tangle no
-ls -pw 1 state
-#+END_SRC
-
-#+RESULTS:
-: auto-save-list/
-: bookmarks
-: org-id-locations
-
-
-** Currently installed packages under =packages/elpa=
-
-#+BEGIN_SRC shell :session none :shebang "#!/bin/bash"  :eval t :exports both  :tangle no
-ls -pw 1 elpa
-#+END_SRC
-#+RESULTS:
-#+begin_example
-alert-20170824.1140/
-archives/
-async-20170823.2116/
-bbdb-20151114.1541/
-biblio-20161014.1604/
-biblio-core-20160901.1115/
-calfw-gcal-20120111.200/
-calfw-gcal-readme.txt
-dash-20160223.1028/
-dash-functional-20160615.1351/
-deferred-20170531.2135/
-edit-server-20141231.1358/
-edit-server-htmlize-20130329.1548/
-edit-server-htmlize-readme.txt
-edit-server-readme.txt
-f-20151113.123/
-faceup-20150215.1348/
-git-commit-mode-20141014.1634/
-git-rebase-mode-20150122.1114/
-gntp-20141024.1950/
-ham-mode-20150811.606/
-helm-20170827.134/
-helm-bibtex-20170808.1124/
-helm-core-20170821.2134/
-html-to-markdown-20151105.40/
-hydra-20170813.1058/
-ivy-20170817.1000/
-js2-mode-20170116.733/
-js2-mode-readme.txt
-js3-mode-20160515.850/
-js3-mode-readme.txt
-js-comint-20161212.2125/
-js-comint-readme.txt
-key-chord-20160227.438/
-log4e-20170401.604/
-magit-20150124.930/
-markdown-mode-20161222.1416/
-nodejs-repl-20170110.940/
-nodejs-repl-readme.txt
-nvm-20151113.55/
-nvm-readme.txt
-openwith-20120531.1436/
-openwith-readme.txt
-org-20160222/
-org-gcal-20170420.1401/
-org-gcal-readme.txt
-org-journal-20151228.603/
-ox-reveal-20160224.1819/
-parsebib-20170501.347/
-pdf-tools-20170820.1117/
-popup-20160709.729/
-racket-mode-20150807.1730/
-racket-mode-readme.txt
-request-20170131.1747/
-request-deferred-20160419.1605/
-s-20140910.334/
-smex-20151212.1409/
-smex-readme.txt
-tablist-20170219.1935/
-tern-20161222.850/
-tern-auto-complete-readme.txt
-web-mode-20150722.12/
-#+end_example
-
-
-** Currently installed packages under =packages/elpa-staged=
-
-#+BEGIN_SRC shell :session none :results value :shebang "#!/bin/bash"  :eval t :exports both :tangle no
-ls -pw 1 packages/elpa-staged
-#+END_SRC
-#+RESULTS:
-| auctex-11.88.6/      |
-| auctex-readme.txt    |
-| geiser-20150831.826/ |
-| org-20150302/        |
-
-
-** Currently installed libraries under =packages/other=
-
-Not all libraries under =other= are on the =load-path=.
-None of the libraries are under version control.  However,
-all of them are listed here for future reference.
-
-#+BEGIN_SRC shell :session none :shebang "#!/bin/bash"  :eval t :exports both :tangle no
-ls -pw 1 packages/other
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-AspectJForEmacs-1.1b2/
-auctex-11.86/
-bmacs/
-calendar/
-cc-mode-5.31.3/
-cedet-1.0beta2b/
-cedet-1.0pre3/
-ebib/
-eieio-0.17/
-elib-1.0/
-geiser-0.6/
-haskell/
-html-from-latex/
-html-helper-mode/
-htmlize/
-html-parse/
-jde-2.3.2/
-jde-2.3.5/
-mew/
-mew-3.1.50/
-mew-3.2/
-mew-3.3rc1/
-nxml/
-nxml-mode-20041004/
-ocaml/
-org-7.5/
-org-7.9.2/
-org-8.2.10/
-org-8.3.1/
-org-8.3.1.tar.gz
-org-protocol/
-pathname/
-pcsv/
-ProofGeneral-4.2/
-psgml-1.3.1/
-schadchen-el/
-scheme/
-scilabelisp-2.1.7/
-semantic-1.4.3/
-speedbar-0.14beta4/
-table-1.5.53/
-xml-parse/
-#+end_example
-
-|------------+------------+------------+---+---|
-| File/Dir   | versioned? | load-path? |   |   |
-|------------+------------+------------+---+---|
-| =init.org= | Y          | N/A        |   |   |
-|------------+------------+------------+---+---|
-| =custom=   | Y          | Y          |   |   |
-|------------+------------+------------+---+---|
-| =elpa=     | N          | Y          |   |   |
-|------------+------------+------------+---+---|
-| =git=      | N          | Y          |   |   |
-|------------+------------+------------+---+---|
-| =packages= | N          | N          |   |   |
-|------------+------------+------------+---+---|
-
-* Configuration for package management, directories and load path
-** Standard required libraries
 #+BEGIN_SRC emacs-lisp
 (require 'cl)
 ;; (require 'pathname)
 (require 'comint)
 #+END_SRC
 
+* Package management
+Packages are managed by setting the proxies, archive
+locations and initialization.  The list of selected packages
+are then installed in the =elpa= directories under
+=user-emacs-directory=.
 ** Proxies
-
 #+begin_src emacs-lisp
 (setq url-proxy-services 
    '(("http"  . "proxy.iiit.ac.in:8080")
      ("https" . "proxy.iiit.ac.in:8080")))
 #+end_src
-** Package management
+** Package archives and initialization
 #+BEGIN_SRC emacs-lisp
 ;;; Package management
 (require 'package)
-
 ;;; default value
 ;;; (("gnu" . "http://elpa.gnu.org/packages/"))
 
@@ -336,55 +162,102 @@ xml-parse/
 (package-initialize)
 #+END_SRC
 
-** List of desired packages
-We would like to install 
+** List of packages selected for installation
+These packages 
 #+BEGIN_SRC emacs-lisp
 (setq package-selected-packages 
-	  '(org-tree-slide 
-;;		web-mode
-		tern
-		smex
-		racket-mode
-		pdf-tools
-		ox-reveal
-		org-journal
-;;		org-gcal
-		openwith
-		nvm 
-		nodejs-repl
-		magit
-		key-chord
-;;		js3-mode
-;;		js2-mode
-		js-comint
-		ivy
-		hydra
-		helm-bibtex
-		ham-mode
+	  (append 
+	  '(alert
+		async
+		bbdb
+		biblio
+		biblio-core
+		calfw-gcal
+		dash
+		dash-functional
+		deferred
 		edit-server
 		edit-server-htmlize
-		calfw-gcal
-		bbdb
-))
-
+		f
+		faceup
+		git-commit-mode
+		git-rebase-mode
+		gntp
+		ham-mode
+		helm
+		helm-bibtex
+		helm-core
+		html-to-markdown
+		hydra
+		ivy
+		js2-mode
+		js3-mode
+		js-comint
+		key-chord
+		log4e
+		magit
+		markdown-mode
+		nodejs-repl
+		nvm
+		openwith
+		org
+		org-gcal
+		org-journal
+		org-tree-slide
+		ox-reveal
+		parsebib
+		pdf-tools
+		popup
+		racket-mode
+		request
+		request-deferred
+		s
+		smex
+		tablist
+		tern
+		web-mode
+		)
+	  package-selected-packages
+	  ))
 #+END_SRC
 
 ** Install selected packages
+
+The selected packages are installed under the =elpa=
+sub-directory of =user-emacs-directory=.
+
 #+BEGIN_SRC emacs-lisp
 (package-install-selected-packages)
 #+END_SRC
 
-**  Setting =load-path=
+* Setting =load-path=
 The =load-path= variable is set to a very conservative list
-of directories.  It includes directories selected from
-=custom= and =packages=.  The directories under =elpa= are
-automatically /all selected/.  This may not always be a good
-thing.  Some elpa packages not being used are stored in
-=elpa-staged=.  
+of directories.  
 
+The directories are specified relative to =root-path=.
+These 
+
+
+The directories selected from =custom=,
+=git= and =others= are /added/ (to the front) of =load-path=.
+
+** =root-path=
+
+=root-path= acquires its value in one of two ways:
+ 
+ - Explicit loading of emacs =init.el= :: When the =init.el=
+      file is loaded explicitly via =emacs -l init.el=, then
+      =root-path= is equal to the full pathname of
+      =init.el=.
+
+ - Default directory :: This is the directory containing the
+      =init.el= file.  
 
 #+BEGIN_SRC emacs-lisp
 (defvar root-path (or load-file-name default-directory))
+#+END_SRC
+** setting =load-path=
+#+BEGIN_SRC emacs-lisp
 ;; Load Path
 ;; ---------
 ;;; (list-of pathname?) -> void?
@@ -551,10 +424,21 @@ The current value of load path is given below
 /usr/share/emacs/25.2/lisp/obsolete
 #+end_example
 
+** Bookmarks and auto-save
+*** Bookmarks
+#+BEGIN_SRC emacs-lisp
+;; (setq bookmark-default-file "~/emacs/state/bookmarks")
+;; (setq bookmark-file "~/emacs/state/bookmarks")
+;; (setq org-id-locations-file "~/emacs/state/org-id-locations")
+#+END_SRC
+
+*** Auto-save a-list
+#+BEGIN_SRC emacs-lisp
+;; (setq auto-save-list-file-prefix "~/emacs/state/auto-save-list/.saves-")
+#+END_SRC
 
 
-
-
+* Appearance
 * General Variables
 #+BEGIN_SRC emacs-lisp
 
@@ -578,20 +462,6 @@ The current value of load path is given below
 ;; ediff buffers side-by-side, like it should
 (setq ediff-split-window-function 'split-window-horizontally)
 
-#+END_SRC
-
-** Emacs state  related variables
-
-*** Bookmarks
-#+BEGIN_SRC emacs-lisp
-(setq bookmark-default-file "~/emacs/state/bookmarks")
-(setq bookmark-file "~/emacs/state/bookmarks")
-(setq org-id-locations-file "~/emacs/state/org-id-locations")
-#+END_SRC
-
-*** Auto-save a-list
-#+BEGIN_SRC emacs-lisp
-(setq auto-save-list-file-prefix "~/emacs/state/auto-save-list/.saves-")
 #+END_SRC
 
 * Buffers regions, Status bar, Frames etc.
@@ -737,7 +607,6 @@ it is known.
 
 #+END_SRC
 
-
 * Files, hooks etc.
 
 ** File-system types
@@ -783,7 +652,7 @@ it is known.
   ;;; http://www.emacswiki.org/emacs/InfoPath
 ;;  (add-to-list 'Info-default-directory-list "~/emacs/info")
 
-  (add-to-list 'Info-additional-directory-list "~/emacs/info")
+;;  (add-to-list 'Info-additional-directory-list "~/emacs/info")
   ;; (add-hook 
   ;;  'Info-mode-hook
   ;;  (lambda ()
@@ -878,7 +747,6 @@ is deemed to be a prompt, and is not reexecuted.")
       (cons '("\\.mak$" . makefile-mode) auto-mode-alist))
 #+END_SRC
 
-
 * Python mode
 #+BEGIN_SRC emacs-lisp
 (add-hook 'python-mode-hook
@@ -912,7 +780,6 @@ Also load the org-mode customizations.
 Please invoke the function =bh/org-agenda-to-appt= in
 [[./custom/org-mode/norang.el]] to set up appointments for the
 day.
-
 
 * Comint mode
 

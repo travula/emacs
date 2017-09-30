@@ -1,4 +1,0 @@
-(add-to-list 'load-path nil)
-(add-to-list 'load-path ".")
-(add-to-list 'load-path "/home/choppell/emacs/eieio-0.17")
-(setq debug-on-error t)

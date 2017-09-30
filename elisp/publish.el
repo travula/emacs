@@ -39,6 +39,12 @@
 
 (require 'org)
 (require 'ob-tangle)
+(require 'ob-sh)
+(setq org-babel-load-languages 
+	  '((sh . t)
+		(emacs-lisp . t))) 
+
+
 (load-file "./elisp/tangle-with-publish-dir.el")
 
 (message "Org version = %s" (org-version))
