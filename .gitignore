@@ -68,4 +68,4 @@ Thumbs.db
 # ----------------------
 build/*
 src/git/*
-src/elpa/*
+src/elpa
