@@ -1,0 +1,66 @@
+* Preamble
+* Location, version, Libraries, Packages and load-path
+** Standard libraries 
+These libraries are part of the standard distro:
+
+ - cl
+ - comint
+ - package
+
+** Package management
+*** Proxies
+*** Package archives and initialization
+*** Installation of selected packages
+
+** Load path
+
+*** default-directory, user-emacs-directory, load-file-name and root-path variables
+
+*** Configuring load-path
+
+*** Current value of load-path
+
+* Appearance
+** Frame, modeline and minibuffer 
+** Faces
+* Buffers regions and Files
+** Dictionary and spell check
+** Files and hooks
+
+* Modes
+** Literate modes
+*** Text mode
+*** Org mode
+**** Noweb
+
+** Programming Modes and utilities
+
+*** Paren  matching
+
+*** Dired mode
+
+*** Comint
+
+*** Python
+
+*** Racket
+
+*** JS
+
+*** Shell
+   
+*** Coq
+
+*** BiBTeX
+
+* Interfaces 
+** Browser
+** Server
+
+** Keys
+* Coda
+
+
+
+
+

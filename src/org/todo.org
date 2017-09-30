@@ -1,0 +1,37 @@
+#+title:  TODO
+
+* TODO comment the selected packages 
+Write why we need them and what they do.
+
+* TODO include full pathname in banner
+
+In the banner that prints "running Venkatesh init.el",
+include full pathname of init.el.
+
+* TODO Load all standard libraries
+Standard libraries are those part of the standard emacs
+distro.
+
+* TODO describe root-path
+
+* TODO clean up diff org-versions from load-path
+
+* TODO Get rid of all references to ~/emacs
+
+* TODO put frame and modeline customization in the same section
+
+* TODO move elements of miscellaneous to appropriate sections
+
+* TODO combine bash and shell
+
+* TODO what do we do with abbrev-mode?
+
+
+
+
+  
+
+
+
+
+

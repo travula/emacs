@@ -1,0 +1,1421 @@
+Info file: mew.info,    -*-Text-*-
+produced by `texinfo-format-buffer'
+from file `mew.texi'
+using `texinfmt.el' version 2.38 of 3 July 1998.
+
+
+
+
+
+
+
+INFO-DIR-SECTION Message User Agent
+START-INFO-DIR-ENTRY
+* Mew: (mew.info).           Messaging in the Emacs World.
+END-INFO-DIR-ENTRY
+
+
+
+
+
+
+File: mew.info, Node: cheader, Next: addrbook, Prev: header, Up: Composing
+
+Circular completions in a header
+================================
+
+In a header, circular completions are assigned to `C-cTAB'.  Circular
+completion means that a value of a list is replaced by the next value of
+the list. The end of the list is considered continuous to the top of the
+list. Circular completions in a header are different for each field as
+follows:
+
+   - Circular completion of domain name (To:, Cc:, etc)
+   - Circular completion of From: (From:)
+
+<Circular completion of domain name>
+
+On a field where addresses are written, use `C-cTAB' for domain
+completion. Candidates are selected from `mew-mail-domain-list'.
+
+     To: kazu@`C-cTAB'
+
+If you try to complete just after "@" as up above, the first domain of
+`mew-mail-domain-list' is inserted.
+
+     To: kazu@mew.org`C-cTAB'
+
+After completion, pressing `C-cTAB' one more times inserts the next
+domain of `mew-mail-domain-list'. This completion is looped.
+
+     To: kazu@wide.ad.jp
+
+If a single candidate can be determined, it is inserted.
+
+     To: kazu@w`C-cTAB'
+
+The above example gives:
+
+     To: kazu@wide.ad.jp
+
+<Circular completion of From:>
+
+In Draft mode, the From: field is inserted with the format of "mew-name
+<mew-user@mew-domain>".
+
+     From: Kazu Yamamoto <Kazu@Mew.org>
+
+On the From: field, `C-cTAB' circularly completes its value from
+`mew-from-list'. You can set `mew-from-list' by yourself.  Also,
+`mew-from-list' can be set automatically. For automatic setup, please
+refer to *Note config::.
+
+Typing `C-cTAB' anywhere on the value replaces the value with the next
+value of `mew-from-list'. For example,
+
+     From: Kazu Yamamoto <Kazu@Mew.org>`C-cTAB'
+
+becomes as follows:
+
+     From: Kazuhiko Yamamoto <kazu@wide.ad.jp>
+
+You can define associations of field key and circular completion
+function in `mew-field-circular-completion-switch'. The following
+declaration is used by default.
+
+       '(("To:"          . mew-circular-complete-domain)
+         ("Cc:"          . mew-circular-complete-domain)
+         ("Dcc:"         . mew-circular-complete-domain)
+         ("Bcc:"         . mew-circular-complete-domain)
+         ("Reply-To:"    . mew-circular-complete-domain)
+         ("Resent-To:"   . mew-circular-complete-domain)
+         ("Resent-Cc:"   . mew-circular-complete-domain)
+         ("Resent-Dcc:"  . mew-circular-complete-domain)
+         ("Resent-Bcc:"  . mew-circular-complete-domain)
+         ("From:"        . mew-circular-complete-from)
+         ("Resent-From:" . mew-circular-complete-from))
+
+
+
+File: mew.info, Node: addrbook, Next: send, Prev: cheader, Up: Composing
+
+Address Book
+============
+
+Mew provides an address book ("~/Mail/Addrbook). The address book has 2
+formats. One specifies expansion rules, while the other defines personal
+information.
+
+First, let's look at the format that specifies expansion rules.
+
+     <shortname>: <address1>[, <address2>, <address3>,...]
+
+In this way, you should specify a short name and a full address
+separated by `:'. If you want to expand the short name to multiple
+addresses, you can delimit them with a comma `,'. (This is exactly same
+as addresses delimited by `,' in the To: field, for instance.)  A space
+SPC is allowed after the comma `,'. For example:
+
+     pooh:           winnie-the-pooh@100acre.woodwest.uk
+     piglet:         piglet@beech.tree.uk
+     friends:        pooh, piglet
+
+Multi-level expansion is possible. For example, let's expand "friends"
+as follows:
+
+     To: friends`TAB'
+
+"friends" is expanded to "pooh" and "piglet" internally, after which
+each word is also expanded, resulting in:
+
+     To: winnie-the-pooh@100acre.woodwest.uk, piglet@beech.tree.uk
+
+
+Next, the format to define personal information is shown below:
+
+     <shortname> <address1>[, <address2>, <address3>,...] <nickname> <fullname>
+
+In this way, four elements are separated by SPC.<shortname> is a short
+name. <nickname> and <fullname> are the person's nickname and full name,
+respectively. (For proper usage of the nickname, please refer to *Note
+summary-mode:: and/or *Note draft-mode::.)
+
+The second element is the addresses. If the person has multiple
+addresses, delimit them using `,'. SPC is allowed after `,', which means
+that it does not function as the delimiter. SPC surrounded by quotes `"'
+also has no delimiting function here. For example:
+
+     kazu	kazu@mew.org, kazu@iijlab.net	Kazu-kun  "Kazuhiko Yamamoto"
+
+Unlike the format of expansion rules, the format of personal information
+means that each subsequently generated address will replace the former
+one. For example:
+
+     To: kazu`TAB'
+
+Typing `TAB' after "kazu" generates "kazu@mew.org".
+
+     To: kazu@mew.org`TAB'
+
+Typing `TAB' after "kazu@mew.org" brings about "kazu@iijlab.net".
+
+     To: kazu@iijlab.net`TAB'
+
+Then "kazu@mew.org" will appear again if you type `TAB' after
+"kazu@iijlab.net". In this way, each address is replaced one by one.
+After deciding an address, you can add its full name.
+
+     To: kazu@mew.org`M-TAB'
+
+Like this, typing `M-TAB' replace the address with the following format.
+
+     To: Kazuhiko Yamamoto <kazu@mew.org>
+
+In the personal information format, you can omit any element. When you
+want to omit an intermediate element, specify `*'. The following is an
+example to define nicknames for addresses.
+
+     *	kazu@mew.org, kazu@iijlab.net	Kazu-kun
+
+The nickname is used to replace addresses in Summary mode and to replace
+the citation prefix (*Note cite::) in Draft mode.
+
+The comment letters are `;' and `#'. `;' is valid only when it appears
+at the beginning of lines, resulting in the disregarding of the entire
+line. The comment marker `#' is valid everywhere. The strings between
+`#' and the end of the line are ignored. Also, `\' means a continuous
+line.
+
+Actually, there are short names that are defined automatically, separate
+from this address book function. When you send a message, addresses on
+the To: and Cc: field are automatically registered with their user names
+as short names. Consider the following:
+
+     To: kazu@mew.org
+
+When this message is sent, a short name "kazu" is automatically
+registered for the address "kazu@mew.org". If there is already a short
+name of "kazu", the next action is decided according to
+`mew-addrbook-override-by-newone'. If `nil', the old entry
+remains. Otherwise, the new entry overrides the old one. When expanded,
+the address book short name has priority over the automatic short
+name. Hence, only automatic short names which are not contained in the
+address book are valid. The limit number of automatic short names is
+2000 (`mew-lisp-max-length'). Once the number exceeds 2000, the oldest
+entry is removed. This information is automatically saved to the file
+"~/Mail/.mew-alias".
+
+Summary mode includes the feature of directly registering the
+information of the current message into Addrbook. To register a
+expansion rule, type `C-cC-a'. To register personal information, type
+`C-uC-cC-a'.
+
+     #If you want to register this entry, type C-c C-c.
+     #If you want to NOT register this entry, type C-c C-q.
+     Shortname: kazu
+     Addresses: kazu@mew.org
+     Nickname: 
+     Name: Kazuhiko Yamamoto
+     Comments: 
+
+Add or modify the information if necessary. To register this
+information, type `C-cC-c'. To quit the registration, type `C-cC-q'. You
+should also refer to *Note Quit::.
+
+If you want to use characters of multiple languages, put the following
+onto the beginning of Addrbook.
+
+     #-*-coding:ctext;-*-
+
+
+
+File: mew.info, Node: send, Next: cite, Prev: addrbook, Up: Composing
+
+Sending a message
+=================
+
+When you are ready to send a message after completing composition,
+choose one of the following two commands.
+
+`C-cC-m'
+     Compose a message, put it into +queue or +postq, and leave it for
+     later sending.
+`C-cC-c'
+     Compose a message and send it. You receive the prompt: "Really send
+     this message?  (y or n) ". Type `y' to send it.
+
+Let's look at how a message is modified when sent. Please see the
+following example:
+
+     To: pooh
+     Subject: the next Sunday
+     From: Piglet <piglet@beech.tree.uk>
+     X-Mailer: Mew version 3.3 on Emacs 21.2
+     ----
+     Would you like to play with me next Sunday?
+
+     // Piglet
+
+This message is modified as follows, for example, if it is put into
++queue or +postq by `C-cC-m'.
+
+     Date: Mon, 13 Mar 2000 19:49:50 +0900 (JST)
+     Message-Id: <20000313.194950.59499544.piglet@beech.tree.uk>
+     To: winnie-the-pooh@100acre.woodwest.uk
+     Subject: the next Sunday
+     From: Piglet <piglet@beech.tree.uk>
+     X-Mailer: Mew version 3.3 on Emacs 21.2
+     Mime-Version: 1.0
+     Content-Type: Text/Plain; charset=us-ascii
+     Content-Transfer-Encoding: 7bit
+
+     Would you like to play with me in the next Sunday?
+
+     // Piglet
+
+As you can see, Data: and Message-Id: are added. You should note that
+both its data type and its character set are guessed correctly and
+added.
+
+When composing a message using `C-cC-m' and `C-cC-c', you can make use
+of a feature that identifies errors in a header.
+
+Suppose you set `mew-ask-subject' to `t'. If Subject: is empty, Mew asks
+you its value. If you want to leave it empty, just type `RET'. The
+default value of this variable is `nil'.
+
+Suppose you set `mew-ask-fcc' to `t'. If there is a folder that doesn't
+exist, Mew asks you whether or not you want to create it.  If you want
+to create it, type `y'. Otherwise, type `n'. If you type `n', sending is
+aborted and the cursor returns to the draft. The default value of this
+variable is `nil'.
+
+There are two ways to send messages waiting in +queue.  Please note that
+both of these are commands in Summary mode.
+
+`i'
+     If `mew-auto-flush-queue' is `t', the messages being held in +queue
+     will be sent after the incoming messages have been received.  This
+     method is appropriate for dial-up environments, since one can save
+     on connection fees and repeated authentication for sending.
+     `mew-auto-flush-queue' is default to `t'.
+`C-cC-c'
+     Send messages in +queue. Method is appropriate if you like to
+     preview composed messages first in +queue and then send them. If
+     `mew-ask-flush-queue' is `t', you are asked, Flush queue? (y or n)
+     ".  `mew-ask-flush-queue' is default to `nil'.
+
+
+
+File: mew.info, Node: cite, Next: mime-comp, Prev: send, Up: Composing
+
+Signature and citation
+======================
+
+Next is the explanation of the commands for processing the text in the
+body of the message.
+
+The first one is signature. To insert your signature file
+("~/.signature") on the cursor point, type `C-cTAB'. You can define your
+own signature file to `mew-signature-file'. Setting
+`mew-signature-as-lastpart' and `mew-signature-insert-last', you can
+customize the action of `C-cTAB'.
+
+`C-cTAB'
+     Insert "~/.signature" on the cursor point.
+
+The next one is citation. If you use `a' or `A' in Summary mode, a draft
+for reply is opened up and Emacs is split into three windows. The top is
+Summary mode, the middle is Message mode, and the bottom is Draft mode.
+
+Here are the commands for citing text from Message mode to Draft mode.
+
+`C-cC-y'
+     Copy and paste a part of a message from Message mode WITH citation
+     prefix and label.
+       1. Roughly speaking, it copies the body in Message mode. For
+          example, if Text/Plain is displayed, the entire Message mode
+          is copied. If Message/Rfc822 is displayed, the body without
+          the header is copied.
+       2. If you type `C-uC-cC-y', the header is also copied if exists.
+       3. If an Emacs mark exists, the target is the region between the
+          mark and the cursor.
+`C-cC-t'
+     Copy and paste a part of the message from Message mode WITHOUT
+     citation prefix and label.
+
+The default label and prefix is as follows:
+
+     From: SUMIKAWA Munechika <sumikawa@ebina.hitachi.co.jp>
+     Subject: Wine
+     Date: Wed, 23 Jul 1997 11:40:50 +0900
+
+     > Hi, it's Sumikawa, the guy who's neat from good morning 
+     > to good night.
+     >
+     > Talking about the wonderful wine party, I would propose 
+     > Cabernet Sauvignon, Bordeaux, '90. 
+
+In Draft mode, you can cite any text displayed in Message mode. So, you
+can cite text from multiple messages easily. Select a message in Summary
+mode and display it in Message mode, then cite it in Draft mode. Please
+repeat this procedure as you like. Triple windows are opened for this
+purpose.
+
+
+When highlighting gets wrong, type `C-cC-l' to re-highlight both the
+header and the body
+
+
+
+File: mew.info, Node: mime-comp, Next: charset-guess, Prev: cite, Up: Composing
+
+Composing multipart
+===================
+
+Now let's see how to create multipart messages.
+
+When you are writing a message in +draft/1 and type `C-cC-a', the
+following lines are inserted at the bottom of the draft.
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/     
+          1  Text/Plain(guess)                                       CoverPage*
+          2                                                          .   
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+"1/" is a temporary directory to create multipart and provides a
+location for "~/Mail/attach/1". The part 1, "CoverPage", refers to the
+body. Now the entire draft looks like:
+
+     To: mew-dist
+     Subject: This is header
+     X-Mailer: Mew version 3.3 on Emacs 21.2
+     ----
+     This is the body.
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/     
+          1  Text/Plain(guess)                                       CoverPage*
+          2                                                          .   
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+Here we designate three regions as follows:
+
+   * the region above "----" `header'
+   * the region from "----" to "attachments" `body'
+   * the region below "attachments" `attachments'
+
+In Draft mode, the key bindings differ according to the region.
+
+To `TAB', for instance, the following functions are assigned:
+
+header
+     Completions.
+body
+     Insert TAB.
+attachments
+     Do nothing.
+
+To `c', functions are assigned as follows:
+
+header
+     Insert c.
+body
+     Insert c.
+attachments
+     Copy a file.
+
+The following is a summary of commands in the attachments region.
+
+`C-p'
+     Go to the previous file in the current directory.
+`C-n'
+     Go to the next file in the current directory.
+`C-f'
+     Go to the first subdirectory.
+`C-b'
+     Go to the parent directory.
+`c'
+     Copy a file (possibly via networks) on ".". To copy a remote file,
+     use the "/[user@]hostname:/filepath" syntax.
+`l'
+     Link a file with a symbolic link on ".". If you want to edit the
+     attached file, you should `c' instead of `l' so that you do not
+     edit the original file.
+`d'
+     Delete this file or this directory.
+`m'
+     Create a subdirectory (i.e. multipart) on ".".
+`f'
+     Open this file into a buffer.
+`F'
+     Open a new file into a buffer on ".".
+`y'
+     Link the message which is displayed in Message mode on ".".
+`e'
+     Input external-body on ".".
+`a'
+     Sampling voice and insert as audio file on ".".
+`p'
+     Extract the PGP key for the inputed user on ".".
+`D'
+     Input a description (Content-Description:).
+`T'
+     Change the data type (Content-Type:).
+`t'
+     Toggle text and binary for the data type.
+`I'
+     Specify input coding-system for a Text/* object.
+`C'
+     Specify output coding-system for a Text/* object.
+`P'
+     Specify a file name (Content-Disposition:) to save this part in the
+     receiver side. If you type just `RET' without any string, its value
+     is cleared. Then the file name in the sender side is displayed with
+     `*'.
+
+In attachments, data types are guessed by suffix. The currently
+supported suffixes are as follows:
+
+     .txt       Text/Plain
+     .html      Text/Html
+     .rtf       Text/Enriched
+     .css       Text/Css
+     .sgml      Text/Sgml
+     [0-9]+     Message/Rfc822
+     .ps        Application/Postscript
+     .pdf       Application/Pdf
+     .xml       Application/Xml
+     .doc       Application/Msword
+     .xls       Application/Vnd.Ms-Execl
+     .ppt       Application/Vnd.Ms-Powerpoint
+     .tar|.tar.|.gz|.Z|.taz|.tgz|.bz2?|.lzh|.zip|.bin|.pgp|.gpg|.exe|.dll
+                Application/Octet-Stream
+     .gif       Image/Gif
+     .tiff      Image/Tiff
+     .jpe?g     Image/Jpeg
+     .png       Image/Png
+     .xwd       Image/X-Xwd
+     .xbm       Image/X-Xbm
+     .xpm       Image/X-Xpm
+     .bmp       Image/X-Bmp
+     .pcx       Image/X-Pcx
+     .tga       Image/X-Tga
+     .au        Audio/Basic
+     .wav       Audio/X-Wav
+     .aif?f     Auido/X-Aiff
+     .midi?     Auido/X-Midi
+     .mpga|.mp[23]  Audio/X-Mpeg
+     .mpe?g     Video/Mpeg
+     .mov       Video/Quicktime
+     .avi       Video/X-Msvideo
+
+Please choose an appropriate suffix for the file name so that Mew can
+guess its data type. If there is no matched suffix, the data type
+specified by `mew-content-type' is chosen. Its default value is
+Text/Plain.
+
+
+For instance, if you copy files with `c', the part becomes as follows:
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/   
+          1  Text/Plain(guess)                                       CoverPage*
+     B    2  Image/Gif                    MagicPoint logo            mgp.gif
+     Q    3  Application/Postscript       Presentation Material      ohp.ps
+          4                                                          .
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+Each line of a multipart message consists of
+
+   - marks (Content-Transfer-Encoding:)
+   - part number
+   - data type (Content-Type:)
+   - description (Content-Description:)
+   - file name (Content-Disposition:).
+
+You can change data types (Content-Type:) by pressing `T' at any
+time. If the data type is either text (Text/Plain) or binary
+(Application/Octet-Stream), you can toggle between them using `t'.
+
+Please refer to *Note mark-b-comp:: for explanation on changing the mark
+(Content-Transfer-Encoding:).You can also insert descriptions
+(Content-Description:) by `D'. This description column is overwritten
+when encrypted as described in *Note mark-b-comp::.
+
+Strictly speaking, the fifth column is the copied file name or the value
+of Content-Disposition:, namely the file name to which the receiver
+saves the part. If Content-Disposition: exists, Mew displays
+it. Otherwise, Mew displays the copied file name with `*' appended.
+When you copy a file, the file name is specified as
+Content-Disposition:. But this is not true for both Message/* and
+Multipart/*. To specify Content-Disposition:, use `P'.
+
+Files are treated as singlepart while directories are treated as being
+multipart. Therefore you can create very complex multipart MIME messages
+in the same way as you would create a file system. Very easy, isn't it?
+
+The default data type for directories is Multipart/Mixed. Of course, you
+can change it by pressing `T'.
+
+Once you are ready to send a multipart message, type `C-cC-m' or `C-c
+C-c' to send it as described the previous subsection.
+
+Next is the explanation of the creation of a Message/External-body by
+pressing `e'. If the access-type is "ftp" or "anon-ftp", you can take
+advantage of remote filename completion due to the existence of the
+native Emacs mode of ange-ftp. Of course file completion is available
+for the access-type of "local-file".
+
+If you want to abort creating multipart and to get back to singlepart,
+type `d' in the top level of the multipart message.
+
+
+
+File: mew.info, Node: charset-guess, Next: reply, Prev: mime-comp, Up: Composing
+
+Defining charset
+================
+
+Mew has a mechanism for determining the character set of the transfer
+form for both singlepart and multipart.
+
+<Singlepart>
+
+When you type `C-cC-m' or `C-cC-c' to compose a message in Draft mode,
+Mew decides the character set of the transfer based on the internal
+representation of its body. On Bilingual Emacs, US-ASCII is chosen for
+7bit character sets while ISO-8859-1 is selected for 8bit character
+sets. On Internationalized Emacs, the character set of the transfer form
+is chosen based on rules defined by Mew.
+
+<Multipart>
+
+Since the data to be attached as a part of multipart is a file, it is
+stored on disk. Therefore, in order to determine its character set for
+the transfer form, it is necessary to load the file into an Emacs buffer
+converting it into internal representation. After that, Mew determines
+the character set of the transfer form for the file by the same method
+as singlepart.
+
+On Bilingual Emacs, Mew reads a file as is. So if the file is 7bit,
+US-ASCII is chosen. Otherwise ISO-8859-1 is selected.
+
+On Internationalized Emacs, Mew reads a file according to the local
+convention (i.e. auto conversion). The command to set a local convention
+is `C-x RET l'.
+
+For example, in Japan, ISO-2022-JP, EUC-JP, and Shift_JIS is readily
+guessed and stored in buffer as internal representations for
+Japanese. Mew chooses ISO-2022-JP as the character set of the transfer
+form from the internal representation. That is, even if the character
+set of the file is EUC-JP or Shift_JIS, it is automatically converted
+into ISO-2022-JP, which is the transfer form for Japanese. This means
+that you can attach a file without needing to pay attention to its
+character set.
+
+If you want to specify the coding-system of a file to be attached, type
+`I'. Let's call the character set "input character set". Also, if you
+want to specify the coding-system of the transfer form, use `C'.
+
+Information regarding the character set is displayed in parentheses.  If
+the character set of the transfer form is specified explicitly, it is
+displayed. Otherwise, if the input character set is specified, it is
+displayed with "*".  Otherwise, "guess" is displayed.
+
+Let's look at the following example. Since part 1 is a body, it is
+stored in an Emacs buffer. Because "guess" is displayed, it is Mew that
+determines the character set of the transfer form according to the rules
+that Mew defines.
+
+Since iso-8859-1 is specified as the input character set, Mew loads the
+file considering that its character set is iso-8859-1, and then converts
+it into internal representation. The character set of the transfer form
+is decided according to rules defined by Mew.
+
+The input character set in part 3 cannot be identified just from this
+example. (But a user certainly knows what it is since he actually
+specified it.) In any case, a file will be loaded and be converted into
+internal representation, then be converted into EUC-JP which is
+specified as the character set of the transfer form.
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/     
+          1  Text/Plain(guess)                                       CoverPage*
+          2  Text/Plain(*iso-8859-1)                                 text1
+     B    3  Text/Plain(euc-jp)                                      text2
+          4                                                          .    
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+Note that both `C' and `I' are not available on Bilingual Emacs.
+
+
+
+File: mew.info, Node: reply, Next: forward, Prev: charset-guess, Up: Composing
+
+Replying to a message and deciding recipients
+=============================================
+
+As distinguished from the case of a new message, where the writer
+specifies the addresses of the To:, Cc: or Newsgroups: fields, in a
+reply message addresses are automatically generated.
+
+When `a' and `A' is used in Summary mode, a new draft is prepared in
+Draft mode. Values of To:, Cc:, and Newsgroups: are prepared accoring to
+three alists.
+
+  1. If called with `C-u', replying to the sender/poster only. In this
+     case, `mew-reply-sender-alist' is used.
+  2. If this message is sent by ME, you probably intend to reply with
+     the original header. In this case, `mew-reply-fromme-alist' is
+     used.
+  3. Otherwise, replying to all people listed. In this case,
+     `mew-reply-all-alist' is used.
+
+The default value of `mew-reply-sender-alist' is as follows:
+
+     '(("Reply-To:"
+        ("To:" "Reply-To:" "From:"))
+       (t
+        ("To:" "From:")))
+
+This is read as follows:
+
+  1. If Reply-To: exists, copy the values of Reply-To: and From: to new
+     To:.
+  2. Otherwise, copy the value of From: to To:.
+
+If you would like to reply only to the address on Reply-To: (if any),
+set `mew-reply-sender-alist' like this:
+
+     (setq mew-reply-sender-alist
+           '(("Reply-To:"
+              ("To:" "Reply-To:"))
+             (t
+              ("To:" "From:"))))
+
+The default value of `mew-reply-fromme-alist' is as follows:
+
+     '((t
+        ("To:" "To:")
+        ("Cc:" "Cc:")
+        ("Newsgroups:" "Newsgroups:"))))
+
+This is read as follows:
+
+  1. Copying the value of To: to new To: and copying the value of Cc: to
+     new Cc: and copying the value of Newsgroups: to new Newsgroups:.
+
+The default value of `mew-reply-all-alist' is as follows:
+
+     '((("Followup-To:" "poster")
+        ("To:" "From:"))
+       ("Followup-To:"
+        ("Newsgroups:" "Followup-To:" "Newsgroups:"))
+       ("Newsgroups:"
+        ("Newsgroups:" "Newsgroups:"))
+       ("Reply-To:"
+        ("To:" "Reply-To:" "From:")
+        ("Cc:" "To:" "Cc:" "Apparently-To:"))
+       (t
+        ("To:" "From:")
+        ("Cc:" "To:" "Cc:" "Apparently-To:")))
+
+This is read as follows:
+
+  1. If the value of Followup-To: is "poster", copying the value of
+     From: to new To:.
+  2. If Followup-To: exists, copying the values of Followup-To: and
+     Newsgroups: to new Newsgroups:.
+  3. If Newsgroups: exists, copying the value of Newsgroups: to
+     Newsgroups:.
+  4. If Reply-To: exists, copying the values of Reply-To: and From: to
+     new To:. And copying the values of To:, Cc: and Apparently-To: to
+     new Cc:.
+  5. Otherwise, copying the value of From: to new To:. And copying the
+     values of To:, Cc: and Apparently-To: to new Cc:.
+
+You may want to set `mew-reply-all-alist' like this:
+
+     (setq mew-reply-all-alist
+           '((("Followup-To:" "poster")
+              ("To:" "From:"))
+             ("Followup-To:"
+              ("Newsgroups:" "Followup-To:"))
+             ("Newsgroups:"
+              ("Newsgroups:" "Newsgroups:"))
+             ("Reply-To:"
+              ("To:" "Reply-To:"))
+             (t
+              ("To:" "From:")
+              ("Cc:" "To:" "Cc:" "Apparently-To:"))))
+
+If there are multiple entries for a certain address, they are
+unified. Addresses ending with ":;", which indicates anonymous
+recipients, are automatically removed.
+
+Your addresses are automatically removed. Your addresses are
+automatically defined to `mew-mail-address-list' according to, for
+example, `mew-config-alist'. If you dislike this value, you can also
+explicitly set it like this:
+
+     (setq mew-mail-address-list
+            '("^pooh@[a-z]*.aist-nara.ac.jp$"
+              "^pooh@mew.org$"
+              "^winnie@iijlab.net$"))
+
+
+
+File: mew.info, Node: forward, Next: resend, Prev: reply, Up: Composing
+
+Forwarding messages
+===================
+
+To forward messages, type `f' or `F' in Summary mode. Then Draft mode
+appears and the messages are already attached in the attachments region.
+
+Also, you can prepare the attachments region by yourself, then copy
+(`c') the messages or make links (`l') to the messages.  If the file
+names of the messages are numeric ([0-9]+), they are automatically
+considered as messages. `y' is very convenient because it make a link to
+the message displayed in Message mode.
+
+By default, the entire message is forwarded. If you want to remove some
+parts of its header, define `mew-field-delete-for-forwarding'. The
+following is an example to remove "Received:" and "Return-Path:" when
+forwarded.
+
+     (setq mew-field-delete-for-forwarding '("Received:" "Return-Path:"))
+
+
+
+File: mew.info, Node: resend, Next: pgp-shortcut, Prev: forward, Up: Composing
+
+Re-sending messages
+===================
+
+You may occasionally wish to send messages modifying the header of a
+message.
+
+For instance, you may want to send a message with the same body to
+multiple receivers independently. Please imagine the case where you put
+a created message destined to pooh in +queue and then you wish to send
+an another message to piglet by copying it and modifying its header.
+Let's call this recycle sending.
+
+Also, you occasionally wish to send a message adding the Resent-To:
+field to a target message. This is a kind of forwarding. This is called
+header conversion because a message header is modified. The forwarding
+described the previous subsection is called encapsulation because a
+message is embedded into another new message.
+
+Header mode exists for this reason, modifying a part of the header,
+sending/queuing the created message. You can think this is a kind of
+Draft mode which prohibits modifications of its body.
+
+The following commands are provided in Summary mode to enter Header
+mode.
+
+`W'
+     Recycle sending. Enter Header mode in order to modify To:, Cc:,
+     From: of a target message. Typical usage is for messages in +queue
+     or +postq.
+`r'
+     Re-sending. Enter Header mode in order to add Resent-To:,
+     Resent-Cc:, Resent-From: of a target message. Re-sending may
+     confuse receivers, so you should think carefully before using it.
+
+In Header mode, you can make use of completion and circular completion
+like in Draft mode. When you are finished inputting the header, send the
+message using one of the following commands. You may be concerned
+because the body of hte message is not displayed in your new
+message. But you need not worry, since the body and a part of the target
+message is certainly used.
+
+`C-cC-m'
+     Compose a message, put it into +queue or +postq, and let it be
+     waiting to be sent.
+`C-cC-c'
+     Compose a message and send it. You are asked, "Really send this
+     message?  (y or n) ". Type `y' to send it.
+
+
+
+File: mew.info, Node: pgp-shortcut, Next: mark-b-comp, Prev: resend, Up: Composing
+
+Using PGP
+=========
+
+This section explains the method for signing or encrypting "text only"
+messages with PGP. The following commands are explained.
+
+`C-cC-s'
+     Sign the entire draft with PGP. Input your pass-phrase.
+`C-cC-e'
+     Encrypt the entire draft with PGP.
+`C-cC-b'
+     Sign, and then encrypt the entire draft with PGP. Input your
+     pass-phrase.
+`C-cC-r'
+     Encrypt, and then sign the entire draft with PGP. Input your
+     pass-phrase.
+
+To encrypt a message, receivers' public keys are used. On the other
+hand, your secret key is used to sign a message, and so you need to
+input your pass-phrase when applying the signature. Note that if you are
+using the pass-phrase cache and there are pass-phrases presently cached,
+you do not have to type your pass-phrase (*Note pgp-viewing::).
+
+The shortcut methods of mark based composing are described in the next
+subsection.
+
+If you use PGP with Mew, you have to select an e-mail address for your
+PGP userid (e.g. "Kazuhiko Yamamoto <kazu@mew.org>").
+
+To sign a message, type `C-cC-s'. When signing, because your secret key
+is needed to be decrypted, you may be asked for your pass-phrase if it
+is not cached. Created messages are stored in +queue or +postq.
+
+Your secret key is identified in From: address. If From: does not exist,
+PGP automatically selects your default secret key. When you want to
+specify a secret key that is not identified the address of From:, type
+`C-uC-cC-s'.
+
+
+To encrypt a message, type `C-cC-e'. A message is encrypted with public
+keys identified with the addresses on To: and Cc:. Since this is
+encryption only, you are not asked for your pass-phrase. Created cipher
+messages are stored in +queue.
+
+This message is encrypted with your public key in addition to those of
+the receivers. Therefore you can decrypt created messages. For example,
+you can go to +queue by `g' and preview a created message to reconfirm
+this.
+
+To sign a draft and then encrypt it, type `C-cC-b'. To encrypt a draft
+and then sign it, type `C-cC-r'. In both cases, created messages are
+stored in +queue.
+
+It is very likely that you will forget to sign and/or encrypt a draft
+even if you intended to do so. To resolve this, Mew provides an
+automatic PGP mechanism for the message creation function, `C-cC-m' or
+`C-cC-c'.
+
+If you want to protect privacy of all drafts, set
+`mew-protect-privacy-always' to `t' and set
+`mew-protect-privacy-always-type' to one of PGP services.
+
+If you want to protect the privacy of drafts when replying encrypted
+messages, set `mew-protect-privacy-encrypted' to `t' and set
+`mew-protect-privacy-encrypted-type' to one of the PGP services.  This
+configuration is preferred to the configuration for all drafts described
+above in the case of replying encrypted messages.
+
+The following services are available. The strings enclosed in braces are
+the symbols for each service. The service applied when typing `C-cC-m'
+or `C-cC-c' is displayed in the mode line.
+
+pgp-signature (PS)
+     Sign
+pgp-encryption (PE)
+     Encrypt
+pgp-signature-encryption (PSPE)
+     Sign then encrypt
+pgp-encryption-signature (PEPS)
+     Encrypt then sign
+
+The following example works for signing all drafts.
+
+     (setq mew-protect-privacy-always t)
+     (setq mew-protect-privacy-always-type 'pgp-signature)
+
+The following example is for encrypting drafts when replying encrypted
+messages.
+
+     (setq mew-protect-privacy-encrypted t)
+     (setq mew-protect-privacy-encrypted-type 'pgp-encryption)
+
+In Draft mode, `C-cC-pC-a' toggles `mew-protect-privacy-always' and
+`C-cC-pC-e' toggles `mew-protect-privacy-encrypted'.
+
+You can specify privacy services for the current draft in Draft mode
+beforehand so that you do not forget to apply the privacy services when
+sending. To set privacy services to the current draft evaluated when
+typing `C-cC-m' or `C-cC-c', type `C-cC-pC-d', and then input one of
+privacy services listed above. To cancel the current privacy service,
+just type `RET' instead of selecting the privacy service.
+
+When you compose a message by `C-cC-c' or `C-cC-m', and if signing
+and/or encryption fails, the cursor gets back to the draft. At this
+time, the service that you specified is canceled. If you type `C-cC-c'
+or `C-cC-m' in this situation, a plain message is created, so please be
+careful. After correcting the cause of the failure, if you want the same
+service, type `C-cC-pC-d' to specify your service explicitly or use
+`C-cC-s', `C-cC-e', etc.
+
+
+
+File: mew.info, Node: mark-b-comp, Next: pgp-key, Prev: pgp-shortcut, Up: Composing
+
+Mark based composer
+===================
+
+To support PGP/MIME, mark based composing is provided. Remember the
+previous example.
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/
+          1  Text/Plain(guess)                                       CoverPage*
+     B    2  Image/Gif                    MagicPoint logo            mgp.gif
+     Q    3  Application/Postscript       Presentation Material      ohp.ps
+          4                                                          .
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+You can find the `B' mark and the `Q' mark at the beginning of the
+line. Mew provides you with a new concept of "encoding". Encoding
+includes Base64, Quoted-Printable, Gzip64 (Gzip + Base64), sign with
+PGP, encrypt with PGP.
+
+At present, 6 marks are prepared.
+
+`" "'
+     No encoding. But 8bit text would be encoded.
+`B'
+     Base64
+`Q'
+     Quoted-Printable
+`G'
+     Gzip64 (compressed with gzip then encoded with Base64. This is
+     experimental. Do not use this if receivers do not use Mew.)
+`PS'
+     Sign with PGP
+`PE'
+     Encrypt with PGP
+
+Additional key binding for marks in attachments is as follows:
+
+`B'
+     Put the `B' mark to encode with Base64.
+`Q'
+     Put the `Q' mark to encode with Quoted-Printable.
+`G'
+     Put the `G' mark to encode with Gzip64. This is applicable only to
+     Text/Plain and Application/Postscript since compression is not
+     effective with other objects. For example, JPEG is already
+     compressed.
+`S'
+     Put the `PS' mark to sign with PGP.
+`E'
+     Put the `PE' mark to encrypt with PGP. Input decryptors' addresses.
+`U'
+     Unmark. The original mark appears.
+
+Consider the following example: The second part will be signed with PGP
+then encrypted with PGP for "kazu". Don't be alarmed. Its description is
+overwritten but saved. The third part will be encoded with Gzip64.
+
+     ----------------------------- attachments -----------------------------
+           Multipart/Mixed                                         1/
+          1  Text/Plain(guess)                                       CoverPage*
+     PSPE 2  Image/Gif                    kazu@mew.org               mgp.gif
+     G    3  Application/Postscript       Presentation Material      ohp.ps
+          4                                                          .
+     --------0-1-2-3-4-5-6-7-8-9--------------------------------------------
+
+After applying marks, type `C-cC-m' or `C-cC-c' to create PGP/MIME
+messages.
+
+
+
+File: mew.info, Node: pgp-key, Next: anonymous, Prev: mark-b-comp, Up: Composing
+
+PGP key distribution
+====================
+
+To distribute a PGP public key, please use `p' on attachments in Draft
+mode. It asks whose public key you want to distribute. Just type `RET'
+if it is yours. If you want to distribute someone else's key, input his
+e-mail address with completion. The PGP public key will distributed as
+Content-Type: Application/Pgp-Keys.
+
+If Mew finds that the part is Application/Pgp-keys, it tries to add the
+PGP public key onto your PGP public keyring. Remember that Mew is not
+responsible for TRUST or VALIDITY. It is YOU who set these
+values. Please use the commands described by Mew to set these as
+necessary. If you do not know the meaning of TRUST and VALIDITY, you
+should learn the web of trust system provided by PGP BEFORE using PGP to
+protect your privacy.
+
+
+
+File: mew.info, Node: anonymous, Next: Marks, Prev: pgp-key, Up: Composing
+
+Sending messages with anonymous receivers
+=========================================
+
+You may occasionally wish to send a message to anonymous receivers.
+
+For instance, please imagine that Pooh is trying to invite multiple
+friends to a party. Piglet should reply only to Pooh. However, Piglet
+might make a mistake of replying to other people if the addresses of all
+the invitees are listed in Cc:. Moreover, Pooh does not want to disclose
+the names of those who he invited until the day of the party.
+
+To handle this, Mew makes use of ":;" for anonymous addresses. Please
+look at the following example.
+
+     To: party:piglet@beech.tree.uk,roo@beech.tree.uk;
+     From: Pooh <winnie-the-pooh@100acre.woodwest.uk>
+
+Here, there is a colon (":") after the explanatory comment "party". This
+is followed by some addresses that are delimited by "," and terminated
+by ";". If you write addresses in this format, Mew sends the message to
+the addresses with them removed form the header.  In this example,
+Piglet and Roo will receive the following message.
+
+     To: party:;
+     From: Pooh <winnie-the-pooh@100acre.woodwest.uk>
+
+The receiver knows that the sender is Pooh, but will not know who else
+received the message. Also, the string "party:;" is not address, so the
+receiver cannot reply to it.
+
+You should understand that enumerating many addresses on To: or Cc: is
+basically not a good practice anyway. If you often have the occassion to
+send messages a set group of people, you should create a mailing-list.
+
+
+
+
+File: mew.info, Node: Marks, Next: delete mark, Prev: anonymous, Up: Top
+
+Funny marks
+***********
+
+Here is a listing of marks that a user can use for insertion or deletion
+in Summary mode. This mark is displayed on the right side of the message
+number as follows: (Note that the marks that Mew inserts are displayed
+left side of date.)
+
+         1D 07/17 Itojun         Re: N+I 2001 Tokyo IPv6 ShowCase
+         2o 07/18 Utashiro       kanda-izumiya
+         38 07/19 Nom-sun        refile info.
+
+There are four marks at present.
+
+`D'
+`X'
+     The mark to delete.
+`o'
+     The mark to refile, that is, to move a message to another folder.
+`@'
+     The mark to process messages at the same time.
+`*'
+     The mark to review.
+
+They are explained in sequence. The marks which Mew inserts are
+summarized here as well.
+
+* Menu:
+
+* delete mark::                 Delete `D', `X'
+* refile mark::                 Refile `o'
+* multi mark::                  Multiple `@'
+* review mark::                 Review `*'
+* unmark::                      Deleting marks
+* mark level::                  Overwriting marks
+* off-line::                    Processing marks off-line
+* mew-mark::                    Marks displayed by Mew
+
+
+
+File: mew.info, Node: delete mark, Next: refile mark, Prev: Marks, Up: Marks
+
+Delete `D', `X'
+===============
+
+If you want to delete a message, type `d' in Summary mode to put the `D'
+mark on it. Don't be worried about losing the message by mistake. Since
+attaching the `D' mark has no immediate effect, it does not result in a
+serious mistake. By default, typing `x' moves messages marked with `D'
+to the +trash folder.
+
+To finally delete messages in the +trash folder, the default setting
+includes two methods.
+
+  1. Type `D' in Summary mode.
+  2. Put the `D' mark in the +trash folder then type `x'.
+
+Above, we repeatedly emphasized that this is a "default" setting. This
+means that `mew-msg-rm-policy' is set to `'trashonly'. You can reset
+`mew-msg-rm-policy' to one of the following values. Each of the below
+explains an action that occurs when `x' is pressed.
+
+`'totrash'
+     Refile to the +trash folder if not in the +trash folder.  Just
+     umark the 'D' mark if in the +trash folder.
+`'always'
+     Really remove messages marked with 'D' always anyway.
+`'trashonly'
+     Really remove messages marked with 'D' if in the +trash folder.  In
+     other folders, refile to the +trash folder.
+`'uselist'
+     Really remove messages marked with 'D' if in a folder found in
+     `mew-msg-rm-folder-list'. In other folders, refile to the +trash
+     folder.
+`other values'
+     Considered as 'trashonly.
+
+Customize the action of `x' as you like.
+
+It is convenient if you can change the `*' mark to the `D' mark since
+you can put many the `D' marks at once. To achieve this, use `md'.
+
+There is also another mark `X' which is like the mark `X'.  Messages
+marked with `X' are deleted when `x' is typed regardless the value of
+`mew-msg-rm-policy'. The `X' mark can be put by `M-d'.
+
+The following is a summary regarding with the `D' mark and the `X' mark.
+
+`d'
+     Put the `D' mark.
+`M-d'
+     Put the `X' mark.
+`x'
+     Process messages marked with `D' according to
+     `mew-msg-rm-policy'. Also, delete messages marked with `X'.
+`mxd'
+     Process messages marked with `D' only according to
+     `mew-msg-rm-policy'.
+`mxM-d'
+     Delete messages marked with `X' only.
+`D'
+     Delete all messages in the +trash folder (*Note delete mark::).
+`C-uD'
+     Delete all messages in a specified folder.
+
+
+
+File: mew.info, Node: refile mark, Next: multi mark, Prev: delete mark, Up: Marks
+
+Refile `o'
+==========
+
+To refile a message, type `o' and input a folder name, then `o' is
+put. A folder is guessed neatly, so most time what you should to is just
+type `RET'. For more information, refer to *Note Refile::.
+
+If you type `o' on a message marked with `o', the refile folder is
+shown. When typing `x', messages marked with `o' are actually refiled.
+
+Consider that you specify multiple folders and refiles actually. If your
+file system has hard link, the message is moved to the first folder, and
+hard links are created from the other folders. Otherwise, the message is
+moved to the first folder, and it is copied to the other folders.
+
+If the number of specified folders are 1, and it is the current folder,
+refiling means do nothing. If the number is more than two and the
+current folder is included, refiling means that the message number in
+the current folder remains and hard links are created from the other
+folders (or it is copied to the other folders).
+
+Mew provides `c' which is very similar to `o'. `c' shows the current
+folder as a candidate in addition to guessed folders.
+
+A summary about the `o' mark is here.
+
+`o'
+     Put the `o' mark.
+`c'
+     Put the `o' mark. Showing the current folder as a candidate in
+     addition to guessed folders.
+`x'
+     Refile messages marked with `o'.
+`mxo'
+     Refile messages marked with `o' only. This command does not process
+     other marks.
+
+
+
+File: mew.info, Node: multi mark, Next: review mark, Prev: refile mark, Up: Marks
+
+Multiple `@'
+============
+
+To process multiple messages, put the `@' mark. Here is a summary
+concerned with the `@' mark.
+
+`@'
+     Put the `@' mark.
+`F'
+     Prepare a draft to forward multiple messages marked with `@' in
+     MIME format.
+`M-s'
+     Apply unshar on messages marked with `@'.
+`M-t'
+     Apply "uudecode" on messages marked with `@'.
+`M-b'
+     De-capsulate messages embedded in the messages marked with `@'.
+`M-\'
+     Executing an external command specifying messages marked with `@'
+     as arguments.
+`J'
+     A large message is occasionally fragmented into multiple messages
+     whose Content-Type: is Message/Partial. Mew puts the `P' mark to
+     these messages. Now a user marks these messages with `@' and
+     executing this commands results in producing the original message.
+
+For `M-s' and `M-t', messages marked with `@' are supposed to be in
+order (numbers need not to be contiguous). If out of order, sorting with
+`S' would help.
+
+
+
+File: mew.info, Node: review mark, Next: unmark, Prev: multi mark, Up: Marks
+
+Review `*'
+==========
+
+Please put the `*' mark onto messages that you want to review later. `?'
+also put the `*' mark onto matched messages (for more information, refer
+to *Note Pick::). Use `N' and `P' to walk around messages marked with
+`*'.
+
+Here is a summary for `*' commands.
+
+`*'
+     Put the `*' mark.
+`N'
+     Jump to the message marked with `*' below and display it.
+`P'
+     Jump to the message marked with `*' above and display it.
+`M-n'
+     Display a message marked with `*' and find a keyword and highlight
+     it in the forward direction. The keyword is stored in a buffer
+     local variable in Summary mode and is set when you use `C-u?' or
+     `C-u/' (see *Note Pick::). If no key word is set to the variable,
+     this command first asks you a keyword.  `C-uM-n'The same as `M-n'
+     except that you can change the stored keyword explicitly.
+`M-p'
+     A reverse version of `M-n'.
+`C-uM-p'
+     A reverse version of `C-uM-n'.
+`ma'
+     Put the `*' mark to all unmarked messages.
+`mr'
+     Put the `*' mark to all matching messages with inputed regular
+     expression.
+`mI'
+     Retrieve the rest of truncated(`T') messages marked with `*'. If
+     `mew-pop-delete' is `t', delete the messages from the mailbox.
+`C-umI'
+     Perform `mI'. If `mew-pop-delete' is not `t', delete the messages
+     from the mailbox.
+
+
+
+File: mew.info, Node: unmark, Next: mark level, Prev: review mark, Up: Marks
+
+Deleting marks
+==============
+
+Refiling and deleting is not processed unless you type `x'. So, if you
+press `u' to unmark before you type `x', messages do not disappear
+accidentally.
+
+Here is a summary for unmark commands.
+
+`u'
+     Cancel the mark on this message.
+`U'
+     Cancel all marks according to what you input.
+
+
+
+File: mew.info, Node: mark level, Next: off-line, Prev: unmark, Up: Marks
+
+Overwriting marks
+=================
+
+Marks are classified into two categories, "strong mark" and "weak mark".
+The same level mark can be overwritten. A strong mark can overwrite a
+weak mark.
+
+When you put a mark, the following action is taken.
+
+Strong marks :: `o', `D', `X'
+     If marks an unmarked message, display the next message. If
+     overwrites, stay the current line.
+Weak marks :: `*' and `@'
+     Stay the current line always.
+
+Refer to *Note summary-mode:: to know which direction the cursor moves
+after putting a strong mark.
+
+You can exchange marks as follows:
+
+`m@'
+     `*' -> `@' :: It is useful when you pick messages by `?'  then pass
+     them to "uumerge" with `M-t'.
+`m*'
+     `@' -> `*'
+`ms'
+     `@' <-> `*'
+`md'
+     `*' -> `D' :: It is useful when you put `D' marks to messages
+     picked by `?'.
+`mM-d'
+     `*' -> `X' :: It is useful when you put `X' marks to messages
+     picked by `?'.
+`mo'
+     `*' -> `o' :: It is useful when you put `o' marks to messages to be
+     moved picked by `?'.  `*' -> `o' :: It is useful when you put `o'
+     marks to messages to be copied picked by `?'.
+
+
+
+File: mew.info, Node: off-line, Next: mew-mark, Prev: mark level, Up: Top
+
+Processing marks off-line
+*************************
+
+An IMAP user may want to cache messages in folder A and go out. Then he
+may want to put the `o' and/or `D' marks, and process the marks
+off-line. In this story, these jobs should be done in his IMAP server
+after connecting the Internet.
+
+If a message in folder A is moved to folder B with IMAP, the cached
+message in folder A usually must be deleted and a corresponding message
+in folder B must be retrieved from his IMAP server again. This is
+because information embedded in a cached message in folder A is valid
+only in folder A.
+
+Suppose you refile a message in folder A to folder B off-line. It is
+very inconvenient for you to retrieve a corresponding message in folder
+B from your IMAP server , in order to read it, after refile jobs are
+done online. You may want to read the messages refiled to folder B by
+just going to the folder B, without retrieval form the IMAP server.
+
+Mew implements delayed jobs processing and viewing refiled messages
+without retrieval. If you want to process marks off-line, type {lx}.
+`lx' carries out the following jobs.
+
+  1. Deleting messages marked with `o' and/or `D' from folder A.
+  2. Queuing these jobs in %queue.
+  3. Moving messages marked with `o' to folder B and marking them
+     invalid.
+
+'invalid' means that you can read it but you cannot put the `o'/samp{D}
+mark on it. Message numbers of invalid messages start with "0". When you
+go to folder B by typing `g', a list of invalid messages is displayed
+automatically.
+
+If you want to let your IMAP server process jobs in %queue after you get
+back online, type `C-cC-c' in %queue.
+
+Typing `s' in folder B after jobs in %queue are done in your IMAP server
+results in deletion of invalid messages and caching valid messages.
+
+
+

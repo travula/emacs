@@ -1,0 +1,50 @@
+#+title:  How to build and run my emacs configuration
+
+* Pre-conditions
+
+ - ~emacs-25.x~ is installed ::  It is possible to install a
+      new emacs without destroying your current installation
+      of a different version of emacs.
+
+ - ~org-version~ is less than 9.x :: ~emacs-25.2.2~ comes
+      with ~org-version 8.2.10~ by default.  (This may not
+      be true with later versions of ~emacs~, though.).  
+
+* Installation
+
+ - Run ~make -k all~ from the emacs repository.   This
+   creates the file ~build/code/init.el~, which is the emacs
+   init file. 
+ 
+* Post-conditions
+
+ - build/code  holds the code
+
+ - build/docs holds the docs
+
+ - org-version 8.3.4 is installed and supercedes any other
+   org version previously installed. 
+
+* Launching emacs
+
+From the command line, type
+#+BEGIN_SRC bash :eval no
+emacs -l /path/to/build/code/init.el
+#+END_SRC
+
+* Updating packages the first time in emacs
+
+Run the command 
+#+BEGIN_EXAMPLE
+M-x package-install-selected-packages
+#+END_EXAMPLE
+
+This will install selected packages as specified by the
+variable ~package-selected-packages~.
+
+
+
+
+
+
+

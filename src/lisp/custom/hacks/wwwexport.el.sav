@@ -1,0 +1,96 @@
+(require 'pathname)
+
+;; absolute pathname of directory ending in "/"
+;; of the wwwdir on server
+(defvar *export-server*  "unspecified")
+
+;; local mirror of external home page
+;; this must be normalized directory name
+(defvar *local-dir*  "unspecified")
+
+;; absolute pathname of directory ending in "/"
+;; of the wwwdir on server
+(defvar *server-dir*  "unspecified")
+
+
+
+;; example
+;; (compute-www-remote-dir "/home/choppell/.wwwhome/research/")
+;; => "www.iiitmk.ac.in:choppell/research/"
+
+;; computes the name of the quotient of normalized-dir wrt
+;; to *local-wwwhome* and appends the result to
+;; *remote-wwwhome*
+
+(defun get-www-server-info (location)
+  (assq location *www-server-info-view*))
+
+
+(defun compute-www-remote-dir (dir)
+  (if (not (pathname-descendent-p dir *local-dir*))
+      (error "directory %s is not a descendent of the wwwhome directory %s"
+	     dir *local-dir*)
+    (concat *server-dir*  ;; should use pathname-merge !!!
+	    (file-name-as-directory 
+	     (file-relative-name dir *local-dir*)))))
+
+(defvar scp-cmd "scp -rpC")
+
+(defun dired-remote-copy ()
+  "Copies marked files, which are assumed to be under
+*local-dir* to the corresponding directory under
+*remote-dir*"
+  (interactive)
+  (let* ((fns (dired-get-marked-files t))
+         (fns-with-space (mapcar (function (lambda (x) (concat x " "))) fns))
+	  ;; default-directory is the directory of the current, i.e., dired buffer
+	 (target-dir (compute-www-remote-dir default-directory))
+	 (location (guess-location))
+	 (server-info (get-www-server-info location)))
+    (if (not server-info)
+	(error 'dired-remote-copy "can not locate server info")
+      (let* ((server-name (cadr server-info))
+	     (server-port (caddr server-info))
+	     (cmd-list `(,scp-cmd " " 
+				  ,server-port " "
+				  ,@fns-with-space " "
+				  ,server-name ":"
+				  ,target-dir 
+				  " &"))
+	     (cmd (apply 'concat cmd-list)))
+	(print cmd)
+;	(shell-command cmd)
+	))))
+
+(defun iiitb-export ()
+  (interactive)
+  (let ((*local-dir* "/home/choppell/teaching/pantoto.org/pop")
+        (*server-dir* "teaching/se-101/")
+;; -r recursive
+;; -R  relative directory names
+;; -l  recreate symlinks on destination
+;; -C  ignore .cvs type of files
+        (scp-cmd  "rsync -rRlC"))
+;    (with-current-buffer (get-buffer "lisp")
+      (dired-remote-copy)
+;)
+))
+
+
+
+;; (let ((*local-dir* "/home/choppell/emacs/")
+;;       (*server-dir* "/foo/bar/"))
+;;   (with-current-buffer (get-buffer "lisp")
+;;     (dired-remote-copy)))
+
+
+;; (let ((*local-dir* "/home/choppell/emacs/")
+;;       (*server-dir* "/foo/bar/"))
+;;   (with-current-buffer (get-buffer "lisp")
+;;     (iiitb-export)))
+
+;; "rsync -rRlC  box.el  login.iiitmk.ac.in:/foo/bar/lisp/ &"
+;; "rsync -rRlC  box.el  login.iiitmk.ac.in:/foo/bar/lisp/ &"
+
+
+(provide 'wwwexport)

@@ -1,0 +1,25 @@
+			      <Roadmap>
+
+The branch of Mew 3 is for bug fixes only.
+
+Things to do on Mew 4:
+
+	Attaching a buffer
+	Retaining e-mail addresses on Bcc: in a backup message
+	Supporting Open Office
+	Supporting Text/Pgp (i.e. PGP clear signature)
+	Rewriting S/MIME
+	Multipart Editor
+	Forwarding a first text part and its header only
+	Merging Summary Highlight
+	Refiler on inc and SPAM refiler?
+	API for grep which searches encrypted messages
+	Resolving the MX RR
+	IMAP APPEND
+	Refiling messages whose destination is the same ONLY
+	Re-consideration of Biff
+	Refiling invalid caches even online
+	Instruction message for binhex
+	IMAP remote search
+	Re-considering marking architecture
+	Read/unread marking
