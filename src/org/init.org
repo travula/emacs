@@ -21,16 +21,9 @@
 
 * Introduction
 
-These pages capture my emacs configuration.  
-
-The main objective of this project is to make my emacs
-configuration completely portable: 
-
-  - 1. Clone git repository :: =git clone https://gitlab.com/vxcg/prj/emacs/emacs.git
-
-  - 2. Make the  =init.el= file :: =make -k all=
-
-  - 3. Launch emacs ::  =emacs -q -l /path/to/init.el=.
+These pages capture my emacs configuration.  If you want to
+know how to install and use it, please see the instructions
+in [[../how-to-install.org][how-to-install]].
 
 * Emacs version and set up of emacs directories
 I am using emacs version
@@ -42,43 +35,55 @@ I am using emacs version
 : GNU Emacs 25.2.2 (x86_64-pc-linux-gnu, GTK+ Version 3.10.8)
 :  of 2017-05-06
 
-** Key directories and files
-
-The installation makes no changes to the default user emacs
-directory stored in the variable =user-emacs-directory=.
-
-However, as a result of running this file, the elpa
-directory may be populated by the packages identified by the
-variable 
-
-* Preamble of =init.el=
+* Preamble 
 The banner prints the name of the full path of the =init.el=
-file. 
-*** Banner
+file and then proceeds to initialize key directory
+variables. 
+
+** Banner
 #+BEGIN_SRC emacs-lisp 
 ;;; Emacs lisp configuration
 ;;; Venkatesh Choppella
 ;;; <venkatesh.choppella@iiit.ac.in>
 ;;; gitlab: @vxc
+#+END_SRC
+
+** Required standard libraries
+
+A standard library is one that comes with the standard emacs
+distribution.
+#+BEGIN_SRC emacs-lisp
+(require 'cl)
+(require 'package)
+(require 'comint)
+#+END_SRC
+
+** Initializing key emacs directories
+
+#+BEGIN_SRC emacs-lisp 
+
+(message "starting evaluation of init file")
+
+
+;;; version of emacs running
+(message "emacs-version = %s" (version))
 
 (defmacro rval (var)
   "Return the value of symbol VAR if it is bound, else nil."
   `(and (boundp (quote ,var)) ,var))
 
-(message "start evaluating init file")
-
-;;; version of emacs running
-(message "emacs-version = %s" (version))
-
 ;;; load-file-name is the name of the file loaded with the -l option.
-(message "load-file-name = %s" load-file-name)
+(message "load-file-name = %s" (rval load-file-name))
+
 
 ;;; default-directory is where emacs is launched from.
 (message "default-directory = %s" default-directory)
 
+
 ;;; user-emacs-dir is bound to the value set at command line, 
 ;;; unbound otherwise
 (message "user-emacs-dir = %s" (rval user-emacs-dir))
+
 
 ;;; expanded-user-emacs-dir-or-nil is the expanded user-emacs-dir
 ;;; if user-emacs-dir is bound, nil otherwise.
@@ -86,6 +91,7 @@ file.
 (setq expanded-user-emacs-dir-or-nil
 	  (and (rval user-emacs-dir)
 		   (expand-file-name (file-name-as-directory user-emacs-dir))))
+
 (message "expanded-user-emacs-dir-or-nil = %s" expanded-user-emacs-dir-or-nil)
 
 ;;; user-emacs-directory is where the user emacs customizations sit.
@@ -100,41 +106,30 @@ file.
 
 (message "user-emacs-directory = %s" user-emacs-directory)
 
-(require 'package)
-
 ;;; package-user-dir is the directory where user downloaded packages
 ;;; are installed.
 
-;;; 'package sets is to the elpa subdirectory of the
+;;; 'package sets thi to the elpa subdirectory of the
 ;;; user-emacs-directory.
 
 (message "package-user-dir = %s" package-user-dir)
 
 ;;; Canonicalise the directory to a fully expanded name.
-
 (setq package-user-dir
 	  (file-name-as-directory
-	   (concat user-emacs-directory "elpa")))
+;; 	   package-user-dir ; this defaults to ~/.emacs.d/elpa
+	   (concat user-emacs-directory "elpa")
+	   ))
 
 (message "canonicalised package-user-dir = %s" package-user-dir)
 
 ;;; package-directory-list is the list of directories searched for
 ;;; packages. 
 ;;; Its value is set by 'package
-
 (message "package-directory-list = %s" package-directory-list)
-(message "load-path = %s" load-path)
-#+END_SRC
 
-** Required standard libraries
-
-A standard library is one that comes with the standard emacs
-distribution.
-
-#+BEGIN_SRC emacs-lisp
-(require 'cl)
-;; (require 'pathname)
-(require 'comint)
+;;; initial value of load
+(message "initial load-path = %s" load-path)
 #+END_SRC
 
 * Package management
@@ -163,7 +158,6 @@ are then installed in the =elpa= directories under
 #+END_SRC
 
 ** List of packages selected for installation
-These packages 
 #+BEGIN_SRC emacs-lisp
 (setq package-selected-packages 
 	  (append 
@@ -203,6 +197,7 @@ These packages
 		org
 		org-gcal
 		org-journal
+        org-ref
 		org-tree-slide
 		ox-reveal
 		parsebib
@@ -221,42 +216,29 @@ These packages
 	  ))
 #+END_SRC
 
-** Install selected packages
-
-The selected packages are installed under the =elpa=
-sub-directory of =user-emacs-directory=.
-
+** Installing selected packages
 #+BEGIN_SRC emacs-lisp
+;; download descriptions of elpa packages
+(package-refresh-contents)
+
+;; download and install selected packages.
+;; this might be slow
 (package-install-selected-packages)
 #+END_SRC
+
+The selected packages are installed in
+=package-user-dir=.
 
 * Setting =load-path=
 The =load-path= variable is set to a very conservative list
 of directories.  
 
-The directories are specified relative to =root-path=.
-These 
+The directories are specified relative to =user-emacs-directory=.
+
+The directories selected from =custom=, =git= and =others=
+are added to the front.
 
 
-The directories selected from =custom=,
-=git= and =others= are /added/ (to the front) of =load-path=.
-
-** =root-path=
-
-=root-path= acquires its value in one of two ways:
- 
- - Explicit loading of emacs =init.el= :: When the =init.el=
-      file is loaded explicitly via =emacs -l init.el=, then
-      =root-path= is equal to the full pathname of
-      =init.el=.
-
- - Default directory :: This is the directory containing the
-      =init.el= file.  
-
-#+BEGIN_SRC emacs-lisp
-(defvar root-path (or load-file-name default-directory))
-#+END_SRC
-** setting =load-path=
 #+BEGIN_SRC emacs-lisp
 ;; Load Path
 ;; ---------
@@ -266,7 +248,7 @@ The directories selected from =custom=,
 	 (add-to-list 'load-path 
 				  (expand-file-name 
 				   entry
-				   (file-name-directory root-path)))))
+				   user-emacs-directory))))
 
 (add-to-load-path
 '(
@@ -275,12 +257,13 @@ The directories selected from =custom=,
 	  "custom/faces"
 	  "custom/misc"
       "custom/org-mode"
+      "custom/org-mode/contrib/dblock"
       "custom/org-mode/contrib/ox-bibtex"
+      "custom/org-mode/contrib/journal"
       "custom/racket"
 	  "custom/shell"
-      "git/org-ref"
-	  "other/org-8.3.4/lisp"
 	  "other/org-8.3.4/contrib"
+	  "other/org-8.3.4/lisp"
 	  "other/pathname"))
 
 ;;        tweaked 8.3.1 so that it has a  file symlinked to 7.9.2
@@ -299,149 +282,179 @@ The directories selected from =custom=,
 
 #+END_SRC
 
-** Current value of =load-path=
-The current value of load path is given below
+** Function to print =load-path=
 
-#+BEGIN_SRC emacs-lisp :eval t :results value :exports both
+#+BEGIN_SRC emacs-lisp 
 ;;; pretty print the load-path, one directory per line
 (defun pprint-load-path ()
    (mapconcat 'identity load-path  "\n"))
 (pprint-load-path)
 #+END_SRC
-#+RESULTS:
-#+begin_example
-/home/choppell/venk/work/new/prj/emacs/src/org/other/org-8.3.4/contrib
-/home/choppell/venk/work/new/prj/emacs/src/org/other/org-8.3.4/lisp
-/home/choppell/venk/work/new/prj/emacs/src/org/git/org-ref
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/shell
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/racket
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/org-mode/contrib/ox-bibtex
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/org-mode
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/misc
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/faces
-/home/choppell/venk/work/new/prj/emacs/src/org/custom/dired
-/home/choppell/venk/work/new/prj/emacs/src/org/custom
-/home/choppell/emacs/git/org-ref/citeproc/csl
-/home/choppell/emacs/git/org-ref/citeproc
-~/emacs/custom/org-tree-slide
-~/emacs/custom/shell
-~/emacs/custom/org-mode/contrib/journal
-~/emacs/custom/org-mode
-~/emacs/custom/racket
-~/emacs/custom/misc
-~/emacs/custom/keys
-~/emacs/custom/js
-~/emacs/custom/faces
-~/emacs/custom/dired
-~/emacs/packages/other/alloy-mode
-~/emacs/packages/other/pathname
-~/emacs/git/org-ref
-/home/choppell/.emacs.d/elpa/bbdb-20151114.1541
-/home/choppell/.emacs.d/elpa/calfw-gcal-20120111.200
-/home/choppell/.emacs.d/elpa/edit-server-htmlize-20130329.1548
-/home/choppell/.emacs.d/elpa/edit-server-20141231.1358
-/home/choppell/.emacs.d/elpa/ham-mode-20150811.606
-/home/choppell/.emacs.d/elpa/helm-bibtex-20170808.1124
-/home/choppell/.emacs.d/elpa/biblio-20161014.1604
-/home/choppell/.emacs.d/elpa/biblio-core-20160901.1115
-/home/choppell/.emacs.d/elpa/helm-20170827.134
-/home/choppell/.emacs.d/elpa/helm-core-20170821.2134
-/home/choppell/.emacs.d/elpa/async-20170823.2116
-/home/choppell/.emacs.d/elpa/html-to-markdown-20151105.40
-/home/choppell/.emacs.d/elpa/hydra-20170813.1058
-/home/choppell/.emacs.d/elpa/ivy-20170817.1000
-/home/choppell/.emacs.d/elpa/js-comint-20161212.2125
-/home/choppell/.emacs.d/elpa/js2-mode-20170116.733
-/home/choppell/.emacs.d/elpa/js3-mode-20160515.850
-/home/choppell/.emacs.d/elpa/key-chord-20160227.438
-/home/choppell/.emacs.d/elpa/magit-20150124.930
-/home/choppell/.emacs.d/elpa/git-rebase-mode-20150122.1114
-/home/choppell/.emacs.d/elpa/git-commit-mode-20141014.1634
-/home/choppell/.emacs.d/elpa/markdown-mode-20161222.1416
-/home/choppell/.emacs.d/elpa/nodejs-repl-20170110.940
-/home/choppell/.emacs.d/elpa/nvm-20151113.55
-/home/choppell/.emacs.d/elpa/dash-functional-20160615.1351
-/home/choppell/.emacs.d/elpa/f-20151113.123
-/home/choppell/.emacs.d/elpa/dash-20160223.1028
-/home/choppell/.emacs.d/elpa/openwith-20120531.1436
-/home/choppell/.emacs.d/elpa/org-gcal-20170420.1401
-/home/choppell/.emacs.d/elpa/alert-20170824.1140
-/home/choppell/.emacs.d/elpa/log4e-20170401.604
-/home/choppell/.emacs.d/elpa/gntp-20141024.1950
-/home/choppell/.emacs.d/elpa/org-journal-20151228.603
-/home/choppell/.emacs.d/elpa/ox-reveal-20160224.1819
-/home/choppell/.emacs.d/elpa/org-20160222
-/home/choppell/.emacs.d/elpa/parsebib-20170501.347
-/home/choppell/.emacs.d/elpa/pdf-tools-20170820.1117
-/home/choppell/.emacs.d/elpa/popup-20160709.729
-/home/choppell/.emacs.d/elpa/racket-mode-20150807.1730
-/home/choppell/.emacs.d/elpa/faceup-20150215.1348
-/home/choppell/.emacs.d/elpa/request-deferred-20160419.1605
-/home/choppell/.emacs.d/elpa/request-20170131.1747
-/home/choppell/.emacs.d/elpa/deferred-20170531.2135
-/home/choppell/.emacs.d/elpa/s-20140910.334
-/home/choppell/.emacs.d/elpa/smex-20151212.1409
-/home/choppell/.emacs.d/elpa/tablist-20170219.1935
-/home/choppell/.emacs.d/elpa/tern-20161222.850
-/home/choppell/.emacs.d/elpa/web-mode-20150722.12
-/usr/share/emacs/25.2/site-lisp
-/usr/share/emacs/site-lisp
-/usr/share/emacs/site-lisp/apel
-/usr/share/emacs/site-lisp/autoconf
-/usr/share/emacs/site-lisp/coq
-/usr/share/emacs/site-lisp/dictionaries-common
-/usr/share/emacs/site-lisp/doxymacs
-/usr/share/emacs/site-lisp/elscreen
-/usr/share/emacs/site-lisp/emacs-mozc
-/usr/share/emacs/site-lisp/haskell-mode
-/usr/share/emacs/site-lisp/latex-cjk-common
-/usr/share/emacs/site-lisp/latex-cjk-thai
-/usr/share/emacs/site-lisp/magit
-/usr/share/emacs/site-lisp/x-face-el
-/usr/share/emacs/site-lisp/apel/attic
-/usr/share/emacs/25.2/lisp
-/usr/share/emacs/25.2/lisp/vc
-/usr/share/emacs/25.2/lisp/url
-/usr/share/emacs/25.2/lisp/textmodes
-/usr/share/emacs/25.2/lisp/progmodes
-/usr/share/emacs/25.2/lisp/play
-/usr/share/emacs/25.2/lisp/org
-/usr/share/emacs/25.2/lisp/nxml
-/usr/share/emacs/25.2/lisp/net
-/usr/share/emacs/25.2/lisp/mh-e
-/usr/share/emacs/25.2/lisp/mail
-/usr/share/emacs/25.2/lisp/leim
-/usr/share/emacs/25.2/lisp/language
-/usr/share/emacs/25.2/lisp/international
-/usr/share/emacs/25.2/lisp/gnus
-/usr/share/emacs/25.2/lisp/eshell
-/usr/share/emacs/25.2/lisp/erc
-/usr/share/emacs/25.2/lisp/emulation
-/usr/share/emacs/25.2/lisp/emacs-lisp
-/usr/share/emacs/25.2/lisp/cedet
-/usr/share/emacs/25.2/lisp/calendar
-/usr/share/emacs/25.2/lisp/calc
-/usr/share/emacs/25.2/lisp/obsolete
-#+end_example
 
-** Bookmarks and auto-save
-*** Bookmarks
-#+BEGIN_SRC emacs-lisp
-;; (setq bookmark-default-file "~/emacs/state/bookmarks")
-;; (setq bookmark-file "~/emacs/state/bookmarks")
-;; (setq org-id-locations-file "~/emacs/state/org-id-locations")
-#+END_SRC
-
-*** Auto-save a-list
-#+BEGIN_SRC emacs-lisp
-;; (setq auto-save-list-file-prefix "~/emacs/state/auto-save-list/.saves-")
-#+END_SRC
-
+* Loading custom libraries
+#+begin_src emacs-lisp
+(load "org-custom")
+#+end_src
 
 * Appearance
-* General Variables
+** Frames and fonts
+#+BEGIN_SRC emacs-lisp
+(setq frame-width 60) ;; works for bold-24 on my laptop
+(setq frame-height 20);; works for bold-24 on my laptop
+(setq font-string 
+;      "-*-Courier-medium-r-normal-*-18-*-*-*-m-*-iso8859-1"
+;      "-*-Courier-medium-r-normal-*-24-*-*-*-m-*-iso8859-1"
+
+;      "-*-Courier-bold-r-normal-*-12-*-*-*-m-*-iso8859-1"
+;      "-*-Courier-bold-r-normal-*-18-*-*-*-m-*-iso8859-1" ;      not defined
+      "-*-Courier-bold-r-normal-*-24-*-*-*-m-*-iso8859-1"
+)
+
+;; font lock
+(require 'font-lock)
+(global-font-lock-mode 1)
+;;(font-lock-mode 1)
+(load "faces-config")
+; lazy lock breaks font-locking in java files
+;; (setq font-lock-support-mode 'lazy-lock-mode)
+;; frame-width and frame-height come from 
+(setq default-frame-alist 
+      `((top . 25) (left . 10)
+	(width . ,frame-width) (height . ,frame-height)
+	(cursor-type . box)
+;; colors are set in faces-config.el
+	(cursor-color . "red")
+;	(font . ,font-string)
+
+))
+#+END_SRC
+
+** Window splitting etc.
+#+BEGIN_SRC emacs-lisp
+;;; split windows vertically, 
+;;; see responses in the blog
+;;; http://galder.zamarreno.com/?p=134
+
+(setq split-width-threshold nil)
+#+END_SRC
+
+** Text Scaling
 #+BEGIN_SRC emacs-lisp
 
+;;; Restoring font size when visiting files.
+
+;;; https://groups.google.com/forum/#!topic/gnu.emacs.help/0CVSYlNm9J4
+ ;; Restore text-scale after change of major mode.
+
+;; ;;  (setq text-scale-mode-amount 3)
+;; (autoload 'text-scale-mode "face-remap")
+;; (add-hook 'change-major-mode-hook 
+;; 	  (lambda ()
+ ;	    (put 'text-scale-mode-amount 'permanent-local t)
+;; 	    (text-scale-set 3)
+;; 	    ))
+;; (add-hook 'after-change-major-mode-hook 'text-scale-mode)
+
+;; (set-face-attribute 'default nil :height 120)
+ (add-hook 'after-change-major-mode-hook 
+ 	  (lambda ()  (text-scale-set 3)))
+#+END_SRC
+
+** Mode line
+
+#+BEGIN_SRC  emacs-lisp
+  ;; mode-line
+  (defun set-mode-line ()
+    (interactive)
+    "sets customized mode-line"
+    (setq mode-line-format   
+          (list
+           "-" 
+           'mode-line-mule-info 
+           'mode-line-modified 
+           '(line-number-mode "L%l--") 
+           '(column-number-mode "C%c--") 
+           '(-3 . "%p") 
+           'mode-line-frame-identification 
+           'mode-line-buffer-identification 
+           "   " 
+           'global-mode-string 
+           "   %[(" 
+           'mode-name 
+           'mode-line-process 
+           'minor-mode-alist 
+           "%n" 
+           ")%]--" 
+           '(which-func-mode ("" which-func-format "--")) 
+           "-%-")))
+(setq column-number-mode t)
+
+#+END_SRC
+
+** Frame title
+#+BEGIN_SRC emacs-lisp
+;; user@machine frame title
+(setq frame-title-format
+      (concat  "%b - emacs@" system-name))
+
+
+
+;;; For full screen on starting Emacs
+
+(defun toggle-fullscreen ()
+  (interactive)
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+			 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+			 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+  )
+(when window-system
+  (toggle-fullscreen))
+
+
+;;; To disable the splash screen
+(setq inhibit-splash-screen t)
+
+;;; Display Battery Status
+(display-battery-mode t)
+
+;;; Show Column Number
+(column-number-mode t)
+
+;;; To show date and time
+(setq display-time-day-and-date t
+     display-time-12hr-format t)
+     (display-time)
+#+END_SRC
+
+** Minibuffer
+
+#+BEGIN_SRC emacs-lisp
+
+
+;;; changing the text size in the minibuffer
+;;; http://stackoverflow.com/questions/7869429/altering-the-font-size-for-the-emacs-minibuffer-separately-from-default-emacs
+
+(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup)
+(defun my-minibuffer-setup ()
+       (set (make-local-variable 'face-remapping-alist)
+          '((default :height 1.5))))
+
+#+END_SRC
+
+** Faces customization
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(outline-2 ((t (:inherit font-lock-variable-name-face :foreground "steel blue"))))
+ '(outline-3 ((t (:inherit font-lock-keyword-face :foreground "dark slate gray")))))
+#+END_SRC
+
+* General Variables
+#+BEGIN_SRC emacs-lisp
 ;;; evaluation and debugging
 (setq debug-on-error 1)
 (setq max-lisp-eval-depth 2000)
@@ -461,11 +474,9 @@ The current value of load path is given below
 
 ;; ediff buffers side-by-side, like it should
 (setq ediff-split-window-function 'split-window-horizontally)
-
 #+END_SRC
 
-* Buffers regions, Status bar, Frames etc.
-
+* Buffers and  regions
 ** Killing buffers, region highlighting
 #+BEGIN_SRC emacs-lisp
 ;;; Buffers
@@ -550,65 +561,7 @@ it is known.
 ;; (ido-mode t)
 #+END_SRC
 
-** Status bar
-#+BEGIN_SRC emacs-lisp
-;; show column number in status bar
-(setq column-number-mode t)
-#+END_SRC
-
-** Frame title
-#+BEGIN_SRC emacs-lisp
-;; user@machine frame title
-(setq frame-title-format
-      (concat  "%b - emacs@" system-name))
-
-
-
-;;; For full screen on starting Emacs
-
-(defun toggle-fullscreen ()
-  (interactive)
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-			 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-  )
-(when window-system
-  (toggle-fullscreen))
-
-
-;;; To disable the splash screen
-(setq inhibit-splash-screen t)
-
-;;; Display Battery Status
-(display-battery-mode t)
-
-;;; Show Column Number
-(column-number-mode t)
-
-;;; To show date and time
-(setq display-time-day-and-date t
-     display-time-12hr-format t)
-     (display-time)
-#+END_SRC
-
-** Minibuffer
-
-#+BEGIN_SRC emacs-lisp
-
-
-;;; changing the text size in the minibuffer
-;;; http://stackoverflow.com/questions/7869429/altering-the-font-size-for-the-emacs-minibuffer-separately-from-default-emacs
-
-(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup)
-(defun my-minibuffer-setup ()
-       (set (make-local-variable 'face-remapping-alist)
-          '((default :height 1.5))))
-
-#+END_SRC
-
 * Files, hooks etc.
-
 ** File-system types
 #+BEGIN_SRC emacs-lisp
 ;;; file-system-types
@@ -636,7 +589,6 @@ it is known.
         ;; ("\\.\\(?:jp?g\\|png\\)\\'" "display" (file))
         ))
 (openwith-mode t)
-
 #+END_SRC
 
 ** Turn on =auto-fill= when visiting a file.
@@ -646,20 +598,13 @@ it is known.
 (add-hook 'find-file-hooks 'turn-on-auto-fill)
 #+END_SRC
 
-* Info 
-#+BEGIN_SRC emacs-lisp
-  ;;; info
-  ;;; http://www.emacswiki.org/emacs/InfoPath
-;;  (add-to-list 'Info-default-directory-list "~/emacs/info")
+** Tab width
+#+begin_src emacs-lisp
+(custom-set-variables
+ '(tab-width 4))
 
-;;  (add-to-list 'Info-additional-directory-list "~/emacs/info")
-  ;; (add-hook 
-  ;;  'Info-mode-hook
-  ;;  (lambda ()
-  ;;    (setq Info-additional-directory-list Info-default-directory-list)
-  ;; ))
-#+END_SRC
-
+(setq tab-always-indent 'complete)
+#+end_src
 * Miscellaneous
 #+BEGIN_SRC emacs-lisp
 (display-time)
@@ -670,9 +615,10 @@ it is known.
 (setenv "EDITOR" "/usr/bin/emacsclient")
 #+END_SRC
 
-* Text mode
-
-#+BEGIN_SRC emacs-lisp
+* Modes
+** Literate modes
+*** Text mode
+ #+BEGIN_SRC emacs-lisp
 ;;; Control the fill column when in text mode
 (add-hook 'text-mode-hook
 	  (function (lambda ()
@@ -684,106 +630,19 @@ it is known.
 ;                       48  ; ideal for large font
 ;                       40  ; large font on projector
 		       ))))
-#+END_SRC
+ #+END_SRC
 
 
-** word count  on text files
-#+BEGIN_SRC emacs-lisp
+*** word count  on text files
+ #+BEGIN_SRC emacs-lisp
 (defun wc (start end)
   (interactive "r")
   (shell-command-on-region start end "wc"))
-#+END_SRC
+ #+END_SRC
 
-* Bash 
+** Comint mode
 
-#+BEGIN_SRC emacs-lisp
-;; BASH
-;; ====
-;; Include the following only if you want to run
-;; bash as your shell.
-
-;; Setup Emacs to run bash as its primary shell.
-(setq shell-file-name "bash")
-(setq shell-command-switch "-c")
-(setq explicit-shell-file-name shell-file-name)
-(setenv "SHELL" shell-file-name)
-
-(defconst shell-prompt-pattern 
-  "^\[[A-Za-z0-9]*:[^]]*\]"
-
-  "*Regexp used by Newline command to match subshell prompts.
-Anything from beginning of line up to the end of what this pattern matches
-is deemed to be a prompt, and is not reexecuted.")
-#+END_SRC
-
-* Shell mode
-
-#+BEGIN_SRC emacs-lisp
-(setq auto-mode-alist
-      (cons '("\\.properties$" . shell-script-mode) 
-	    auto-mode-alist))
-
-(setq auto-mode-alist
-      (cons '("\\.prop$" . shell-script-mode) 
-	    auto-mode-alist))
-
-(setq auto-mode-alist
-      (cons '("\\.conf$" . shell-script-mode) 
-	    auto-mode-alist))
-
-;; shell scripts
-(setq auto-mode-alist
-      (cons '("\\.sh$" . shell-script-mode) 
-	    auto-mode-alist))
-(setq auto-mode-alist
-      (cons '("\\.bash$" . shell-script-mode) 
-	    auto-mode-alist))
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
-;; Makefiles
-(setq auto-mode-alist
-      (cons '("\\.mak$" . makefile-mode) auto-mode-alist))
-#+END_SRC
-
-* Python mode
-#+BEGIN_SRC emacs-lisp
-(add-hook 'python-mode-hook
-	  (function 
-	     (lambda ()
-	       (setq tab-width 4))))
-#+end_src
-* Abbrevs
-
-See http://www.emacswiki.org/emacs/AbbrevMode
-
-* Org mode configuration
-
-** Automatically switch to org-mode 
-
-Also load the org-mode customizations.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 
-   'auto-mode-alist
-    '("\\.org$" . org-mode))
-
-   (add-hook 'org-mode-hook
-             (function (lambda ()
-                         (load "org-custom"))))
-
-
-#+END_SRC
-
-** Appointments
-Please invoke the function =bh/org-agenda-to-appt= in
-[[./custom/org-mode/norang.el]] to set up appointments for the
-day.
-
-* Comint mode
-
-#+BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
 ;;; Comint
 ;;; ======
 (add-hook 'comint-output-filter-functions
@@ -791,15 +650,26 @@ day.
      
 (add-hook 'comint-output-filter-functions
 	  'comint-watch-for-password-prompt)
-#+END_SRC
+ #+END_SRC
 
-* Scheme and Racket mode
-
-We work with only the Racket dialect of Scheme.  The
-=racket= emacs support uses the =racket-mode= available in
-=packages/elpa/=.
+** Paren matching functions 
+Code from 1995! (Thanks, Anurag!)
 
 #+BEGIN_SRC emacs-lisp
+;;; Turn on parentheses match highlighting
+(show-paren-mode 1)
+
+
+(load "emlib.el")
+(setq blink-matching-paren-distance 100000)
+#+END_SRC
+** Scheme and Racket mode
+
+ We work with only the Racket dialect of Scheme.  The
+ =racket= emacs support uses the =racket-mode= available in
+ =packages/elpa/=.
+
+ #+BEGIN_SRC emacs-lisp
 ;;; custom racket-support.el defined here
 (setq racket-racket-program
       ; "~/apps/racket/racket-6.1.1/bin/racket"
@@ -815,18 +685,18 @@ We work with only the Racket dialect of Scheme.  The
 (add-hook 'racket-mode-hook 
 	  (function (lambda ()
 		      (load "racket-support"))))
-#+END_SRC
-* Javascript mode
+ #+END_SRC
+** Javascript mode
 
-** Running JS shell in emacs
+*** Running JS shell in emacs
 
-Follow https://www.emacswiki.org/emacs/NodeJs
-Also see https://github.com/redguardtoo/js-comint for the
-latest version.
+ Follow https://www.emacswiki.org/emacs/NodeJs
+ Also see https://github.com/redguardtoo/js-comint for the
+ latest version.
 
 
-We use the =js-comint= package for running Javascript
-#+BEGIN_SRC emacs-lisp
+ We use the =js-comint= package for running Javascript
+ #+BEGIN_SRC emacs-lisp
 (require 'js-comint)
 (defun inferior-js-mode-hook-setup ()
   (add-hook 'comint-output-filter-functions 'js-comint-process-output))
@@ -836,17 +706,17 @@ We use the =js-comint= package for running Javascript
 (setq inferior-js-program-arguments '("--interactive"))
 
 
-#+END_SRC
+ #+END_SRC
 
-Within emacs we work with the =node.js= implementation of
-Javascript.  
+ Within emacs we work with the =node.js= implementation of
+ Javascript.  
 
-**  COMMENT Nodejs-Repl
-Suppressed for now.
+***  COMMENT Nodejs-Repl
+ Suppressed for now.
 
-Install from elpa.
-All this from the =nodejs-repl-readme.txt= under elpa.
-#+BEGIN_SRC emacs-lisp
+ Install from elpa.
+ All this from the =nodejs-repl-readme.txt= under elpa.
+ #+BEGIN_SRC emacs-lisp
 ;; (require 'nodejs-repl)
 ;; (setq nodejs-repl-command "nodejs")
 
@@ -856,12 +726,12 @@ All this from the =nodejs-repl-readme.txt= under elpa.
 ;; 			(define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
 ;; 			(define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
 ;; 			(define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
-#+END_SRC
-** JS-2 mode
+ #+END_SRC
+*** JS-2 mode
 
-From ELPA.  This is the current working setup.
+ From ELPA.  This is the current working setup.
 
-#+BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
 (autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js-mode-hook 'js2-minor-mode)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
@@ -881,43 +751,172 @@ From ELPA.  This is the current working setup.
 ;;; enable nvm support, 
 ;;; see https://github.com/redguardtoo/js-comint
 (js-do-use-nvm)
-#+END_SRC
+ #+END_SRC
 
-** JS-3 mode
-Install from elpa.  This is currently not loaded.  We are
-working with JS-2 mode.
+*** JS-3 mode
+ Install from elpa.  This is currently not loaded.  We are
+ working with JS-2 mode.
 
-#+BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
 ;;; javascript
 ;;; (autoload 'js3-mode "js3" nil t)
 ;;; (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 ;;; (add-to-list 'auto-mode-alist '("\\.json$" . js3-mode))
-#+END_SRC
+ #+END_SRC
 
-** Tern
-Tern (http://ternjs.net/doc/manual.html#emacs) is a code
-analyser for javascript.
-Install from elpa.  Disabled for now.
+*** Tern
+ Tern (http://ternjs.net/doc/manual.html#emacs) is a code
+ analyser for javascript.
+ Install from elpa.  Disabled for now.
 
-#+BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
 ;; (autoload 'tern-mode "tern.el" nil t)
 ;;; auto-enable tern-mode when running javascript
 ;; (add-hook 'js-mode-hook (lambda () (tern-mode t)))
-#+END_SRC
+ #+END_SRC
 
-* Makefile mode
-* Coq
-#+BEGIN_SRC emacs-lisp
+** Makefile mode
+** Coq
+ #+BEGIN_SRC emacs-lisp
 ;;; coq
 
 ;;; see   /home/choppell/venk/emacs/ProofGeneral-4.2/
 
 ;; (add-to-load-path '("~/emacs/packages/other/ProofGeneral-4.2/generic"))
 ;; (load-file "~/emacs/packages/other/ProofGeneral-4.2/generic/proof-site.el")
+ #+END_SRC
+
+
+*** Shell mode
+**** Bash  and Shell script
+
+  #+BEGIN_SRC emacs-lisp
+;; BASH
+;; ====
+;; Include the following only if you want to run
+;; bash as your shell.
+
+;; Setup Emacs to run bash as its primary shell.
+(setq shell-file-name "bash")
+(setq shell-command-switch "-c")
+(setq explicit-shell-file-name shell-file-name)
+(setenv "SHELL" shell-file-name)
+
+(defconst shell-prompt-pattern 
+  "^\[[A-Za-z0-9]*:[^]]*\]"
+
+  "*Regexp used by Newline command to match subshell prompts.
+Anything from beginning of line up to the end of what this pattern matches
+is deemed to be a prompt, and is not reexecuted.")
+  #+END_SRC
+
+**** Shell mode
+
+  #+BEGIN_SRC emacs-lisp
+(setq auto-mode-alist
+      (cons '("\\.properties$" . shell-script-mode) 
+	    auto-mode-alist))
+
+(setq auto-mode-alist
+      (cons '("\\.prop$" . shell-script-mode) 
+	    auto-mode-alist))
+
+(setq auto-mode-alist
+      (cons '("\\.conf$" . shell-script-mode) 
+	    auto-mode-alist))
+
+;; shell scripts
+(setq auto-mode-alist
+      (cons '("\\.sh$" . shell-script-mode) 
+	    auto-mode-alist))
+(setq auto-mode-alist
+      (cons '("\\.bash$" . shell-script-mode) 
+	    auto-mode-alist))
+  #+END_SRC
+
+
+  #+BEGIN_SRC emacs-lisp
+;; Makefiles
+(setq auto-mode-alist
+      (cons '("\\.mak$" . makefile-mode) auto-mode-alist))
+  #+END_SRC
+
+*** Python mode
+  #+BEGIN_SRC emacs-lisp
+(add-hook 'python-mode-hook
+	  (function 
+	     (lambda ()
+	       (setq tab-width 4))))
+  #+end_src
+** Dired mode
+
+#+BEGIN_SRC emacs-lisp
+(load "cd.el")  ;; from emacs/lisp/cd.el
+(global-set-key "\C-cd" 'cd-buffer-dir)
+(add-hook 'dired-load-hook
+  (function 
+    (lambda ()
+      (setq dired-copy-preserve-time t)
+      (setq dired-recursive-copies 'top)
+      (setq dired-dwim-target t) ;
+					; set dired-do-renames
+					; default
+					; target to the
+					; other window
+      (define-key dired-mode-map "b" 'browse-url-of-dired-file)
+      (load "dired-x")
+      (load "dired-operations")
+      (define-key dired-mode-map "z" 'dired-remote-copy)
+      (define-key dired-mode-map "r" 'rsync-se-101) 
+      (define-key dired-mode-map "T" 'dired-trash-files)
+      (define-key dired-mode-map "\C-ca" 'dired-acroread-file)
+      )))
+
+(load "dired")
 #+END_SRC
 
-* Browser interaction
+** BibTeX mode
+*** Helm-Bibtex
 
+ [[https://github.com/tmalsburg/helm-bibtex][Helm-BibTeX]] is a package for managing bibliographic
+ references.
+
+
+ #+BEGIN_SRC elisp
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq bibtex-completion-pdf-field "File") ; use pdf
+ #+END_SRC
+
+* Abbrevs
+
+See http://www.emacswiki.org/emacs/AbbrevMode
+
+* Org mode configuration
+** Automatically switch to org-mode 
+
+Also load the org-mode customizations.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 
+   'auto-mode-alist
+    '("\\.org$" . org-mode))
+
+   (add-hook 'org-mode-hook
+             (function (lambda ()
+                         (load "org-custom"))))
+
+
+#+END_SRC
+
+** Noweb expansion
+
+#+begin_src emacs-lisp
+;;; advice from Thirumal
+(setq org-babel-use-quick-and-dirty-noweb-expansion t)
+#+end_src
+
+* Browser
+** Browser interaction
 #+BEGIN_SRC emacs-lisp
 (setq browse-url-browser-function 
   'browse-url-generic)
@@ -926,6 +925,34 @@ Install from elpa.  Disabled for now.
 
 #+END_SRC
 
+** Chrome interface
+ Editing with Emacs on Chrome browser
+
+   https://www.emacswiki.org/emacs/Edit_with_Emacs
+
+ Note this requires starting Chrome command line with
+
+ #+BEGIN_EXAMPLE
+--proxy-bypass-list=127.0.0.1:9292 
+ #+END_EXAMPLE
+
+ #+BEGIN_SRC emacs-lisp
+  (require 'edit-server)
+  (when (require 'edit-server nil t)
+    (setq edit-server-new-frame nil)
+    (edit-server-start))
+
+  (autoload 'edit-server-maybe-dehtmlize-buffer "edit-server-htmlize" "edit-server-htmlize" t)
+  (autoload 'edit-server-maybe-htmlize-buffer   "edit-server-htmlize" "edit-server-htmlize" t)
+  (add-hook 'edit-server-start-hook 'edit-server-maybe-dehtmlize-buffer)
+  (add-hook 'edit-server-done-hook  'edit-server-maybe-htmlize-buffer)
+ #+END_SRC
+
+*** Edit gmail message mode
+
+ See this blog article
+
+  http://endlessparentheses.com/write-gmail-in-emacs-the-easy-way-gmail-message-mode.html
 * General Key bindings
 This  should be the last section in the emacs init file.
 ** Key bindings
@@ -983,222 +1010,15 @@ This  should be the last section in the emacs init file.
 (global-unset-key "\C-xm")
 #+END_SRC
 
-
-* Custom
-
-#+begin_src emacs-lisp
-(custom-set-variables
- '(tab-width 4))
-
-(setq tab-always-indent 'complete)
-#+end_src
-* Noweb expansion
-
-#+begin_src emacs-lisp
-;;; advice from Thirumal
-(setq org-babel-use-quick-and-dirty-noweb-expansion t)
-#+end_src
-
-* Chrome interface
-Editing with Emacs on Chrome browser
-
-  https://www.emacswiki.org/emacs/Edit_with_Emacs
-
-Note this requires starting Chrome command line with
-
-#+BEGIN_EXAMPLE
---proxy-bypass-list=127.0.0.1:9292 
-#+END_EXAMPLE
-
-#+BEGIN_SRC emacs-lisp
-  (require 'edit-server)
-  (when (require 'edit-server nil t)
-    (setq edit-server-new-frame nil)
-    (edit-server-start))
-
-  (autoload 'edit-server-maybe-dehtmlize-buffer "edit-server-htmlize" "edit-server-htmlize" t)
-  (autoload 'edit-server-maybe-htmlize-buffer   "edit-server-htmlize" "edit-server-htmlize" t)
-  (add-hook 'edit-server-start-hook 'edit-server-maybe-dehtmlize-buffer)
-  (add-hook 'edit-server-done-hook  'edit-server-maybe-htmlize-buffer)
-#+END_SRC
-
-** Edit gmail message mode
-
-See this blog article
-
- http://endlessparentheses.com/write-gmail-in-emacs-the-easy-way-gmail-message-mode.html
-* Date Tree for work logs
-* Faces customization
-#+BEGIN_SRC emacs-lisp
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(outline-2 ((t (:inherit font-lock-variable-name-face :foreground "steel blue"))))
- '(outline-3 ((t (:inherit font-lock-keyword-face :foreground "dark slate gray")))))
-#+END_SRC
-
-* BibTeX 
-
-** Helm-Bibtex
-
-[[https://github.com/tmalsburg/helm-bibtex][Helm-BibTeX]] is a package for managing bibliographic
-references.
-
-
-#+BEGIN_SRC elisp
-(autoload 'helm-bibtex "helm-bibtex" "" t)
-(setq bibtex-completion-pdf-field "File") ; use pdf
-#+END_SRC
-
-* Startup
-** Appearance
-#+BEGIN_SRC emacs-lisp
-;; Appearance
-;; ==========
-
-
-(setq frame-width 60) ;; works for bold-24 on my laptop
-(setq frame-height 20);; works for bold-24 on my laptop
-(setq font-string 
-;      "-*-Courier-medium-r-normal-*-18-*-*-*-m-*-iso8859-1"
-;      "-*-Courier-medium-r-normal-*-24-*-*-*-m-*-iso8859-1"
-
-;      "-*-Courier-bold-r-normal-*-12-*-*-*-m-*-iso8859-1"
-;      "-*-Courier-bold-r-normal-*-18-*-*-*-m-*-iso8859-1" ;      not defined
-      "-*-Courier-bold-r-normal-*-24-*-*-*-m-*-iso8859-1"
-)
-
-;; font lock
-(require 'font-lock)
-(global-font-lock-mode 1)
-;;(font-lock-mode 1)
-(load "faces-config")
-; lazy lock breaks font-locking in java files
-;; (setq font-lock-support-mode 'lazy-lock-mode)
-
-;; frame-width and frame-height come from 
-(setq default-frame-alist 
-      `((top . 25) (left . 10)
-	(width . ,frame-width) (height . ,frame-height)
-	(cursor-type . box)
-;; colors are set in faces-config.el
-	(cursor-color . "red")
-;	(font . ,font-string)
-
-))
-#+END_SRC
-
-** Text Scaling
-
-#+BEGIN_SRC emacs-lisp
-
-;;; Restoring font size when visiting files.
-
-;;; https://groups.google.com/forum/#!topic/gnu.emacs.help/0CVSYlNm9J4
- ;; Restore text-scale after change of major mode.
-
-;; ;;  (setq text-scale-mode-amount 3)
-;; (autoload 'text-scale-mode "face-remap")
-;; (add-hook 'change-major-mode-hook 
-;; 	  (lambda ()
- ;	    (put 'text-scale-mode-amount 'permanent-local t)
-;; 	    (text-scale-set 3)
-;; 	    ))
-;; (add-hook 'after-change-major-mode-hook 'text-scale-mode)
-
-;; (set-face-attribute 'default nil :height 120)
- (add-hook 'after-change-major-mode-hook 
- 	  (lambda ()  (text-scale-set 3)))
-#+END_SRC
-
-** Window splitting etc.
-
-#+BEGIN_SRC emacs-lisp
-;;; split windows vertically, 
-;;; see responses in the blog
-;;; http://galder.zamarreno.com/?p=134
-
-(setq split-width-threshold nil)
-#+END_SRC
-
-** Mode line
-
-#+BEGIN_SRC  emacs-lisp
-
-  ;; mode-line
-  (defun set-mode-line ()
-    (interactive)
-    "sets customized mode-line"
-    (setq mode-line-format   
-          (list
-           "-" 
-           'mode-line-mule-info 
-           'mode-line-modified 
-           '(line-number-mode "L%l--") 
-           '(column-number-mode "C%c--") 
-           '(-3 . "%p") 
-           'mode-line-frame-identification 
-           'mode-line-buffer-identification 
-           "   " 
-           'global-mode-string 
-           "   %[(" 
-           'mode-name 
-           'mode-line-process 
-           'minor-mode-alist 
-           "%n" 
-           ")%]--" 
-           '(which-func-mode ("" which-func-format "--")) 
-           "-%-")))
-
-#+END_SRC
-
-
-** Loading basic libraries
-#+begin_src emacs-lisp
-(load "org-custom")
-#+end_src
-** Dired mode
-
-#+BEGIN_SRC emacs-lisp
-(load "cd.el")  ;; from emacs/lisp/cd.el
-(global-set-key "\C-cd" 'cd-buffer-dir)
-(add-hook 'dired-load-hook
-  (function 
-    (lambda ()
-      (setq dired-copy-preserve-time t)
-      (setq dired-recursive-copies 'top)
-      (setq dired-dwim-target t) ;
-					; set dired-do-renames
-					; default
-					; target to the
-					; other window
-      (define-key dired-mode-map "b" 'browse-url-of-dired-file)
-      (load "dired-x")
-      (load "dired-operations")
-      (define-key dired-mode-map "z" 'dired-remote-copy)
-      (define-key dired-mode-map "r" 'rsync-se-101) 
-      (define-key dired-mode-map "T" 'dired-trash-files)
-      (define-key dired-mode-map "\C-ca" 'dired-acroread-file)
-      )))
-
-(load "dired")
-#+END_SRC
-
-** Paren matching functions 
-Code from 1995! (Thanks, Anurag!)
-
-#+BEGIN_SRC emacs-lisp
-;;; Turn on parentheses match highlighting
-(show-paren-mode 1)
-
-
-(load "emlib.el")
-(setq blink-matching-paren-distance 100000)
-#+END_SRC
-** Server
+* Server
 #+BEGIN_SRC emacs-lisp
 (server-start)
 #+END_SRC
 
+* Coda
+
+#+BEGIN_SRC emacs-lisp
+(message "finishing init.el")
+(message "load-path = %s" (pprint-load-path))
+(message "exiting init.el")
+#+END_SRC

@@ -40,8 +40,26 @@ Inside your emacs working copy:
 * How to launch emacs with the customization kit
 From the command line from any directory, type
 #+BEGIN_SRC bash :eval no
-emacs -l /path/to/emacs-working-copy/build/code/init.el
+emacs -q -l /path/to/emacs-working-copy/build/code/init.el
 #+END_SRC
+
+The =-q= and =-l= combination ensures that emacs starts with
+no other init file other than the one specified by the =-l=
+flag, so if you already have any previous customizations,
+e.g., in a =.emacs.d= directory, they will be ignored.  This
+customization kit works stand alone.  
+
+* How to include your  existing customizations with the kit
+
+If you wish to load your own or existing customizations,
+it's possible to open it in a buffer and load them.
+However, this opens up the possibility of a broken emacs
+customization, specially if some global directory variables
+like =load-path= or =user-emacs-directory= are modified.
+So, Caveat Emptor!
+
+
+
 
 * How to delete the customization kit
 
