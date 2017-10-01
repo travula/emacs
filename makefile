@@ -3,7 +3,7 @@ CODE_DIR=${BUILD_DIR}/code
 DOC_DIR=${BUILD}/docs
 VER_FILE=${BUILD_DIR}/VERSION
 EMACS=emacs-25.2
-
+# note that emacs-25.2 comes with org-8.2.10
 
 all:  build
 
@@ -28,8 +28,9 @@ write-version: emacs-version
 
 
 emacs-version:
-		\rm -rf ${VER_FILE}
-		echo -n "built using          : " >> ${VER_FILE}
-		- echo `${EMACS} --version | head -1` >> ${VER_FILE}
-		echo -n "and org version      : " >> ${VER_FILE}
-		- echo `${EMACS} -q --batch --eval '(princ (org-version))'` >> ${VER_FILE}
+	\rm -rf ${VER_FILE}
+	echo -n "built using          : " >> ${VER_FILE}
+	- echo `${EMACS} --version | head -1` >> ${VER_FILE}
+	echo -n "and org version      : " >> ${VER_FILE}
+	- echo `${EMACS} -q --batch --eval '(princ (org-version))'` >> ${VER_FILE}
+

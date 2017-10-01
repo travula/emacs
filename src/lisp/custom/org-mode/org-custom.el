@@ -342,7 +342,8 @@ location for a browser's bookmark looks like this:
      (sh . t)
 	 ))
 
-
+;;; For noweb.  From Thirumal
+(setq org-babel-use-quick-and-dirty-noweb-expansion t)
 
 
 (setq org-src-fontify-natively t)

@@ -1,7 +1,7 @@
 #+title: Venkatesh Choppella Emacs configuration
 #+AUTHOR:    Venkatesh Choppella
 #+EMAIL:     venkatesh.choppella@iiit.ac.in
-#+DATE:      [2015-09-07 Mon]
+#+DATE:      [2017-10-01 Sun]
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
@@ -217,13 +217,15 @@ are then installed in the =elpa= directories under
 #+END_SRC
 
 ** Installing selected packages
+
+Run these commands from inside emacs when you are online.
 #+BEGIN_SRC emacs-lisp
 ;; download descriptions of elpa packages
-(package-refresh-contents)
+;; (package-refresh-contents)
 
 ;; download and install selected packages.
 ;; this might be slow
-(package-install-selected-packages)
+;; (package-install-selected-packages)
 #+END_SRC
 
 The selected packages are installed in
@@ -262,9 +264,12 @@ are added to the front.
       "custom/org-mode/contrib/journal"
       "custom/racket"
 	  "custom/shell"
-	  "other/org-8.3.4/contrib"
-	  "other/org-8.3.4/lisp"
-	  "other/pathname"))
+;;	  "other/org-8.3.4/contrib/lisp"
+;;	  "other/org-8.3.4/lisp"
+;;	  "other/org-9.1.1/lisp"
+;;	  "other/org-9.1.1/contrib/lisp"
+	  "other/pathname"
+	  ))
 
 ;;        tweaked 8.3.1 so that it has a  file symlinked to 7.9.2
 ;;        TODO: clean this up!
@@ -291,9 +296,9 @@ are added to the front.
 (pprint-load-path)
 #+END_SRC
 
-* Loading custom libraries
+* COMMENT Loading custom libraries
 #+begin_src emacs-lisp
-(load "org-custom")
+; (load "org-custom")
 #+end_src
 
 * Appearance
@@ -711,22 +716,6 @@ Code from 1995! (Thanks, Anurag!)
  Within emacs we work with the =node.js= implementation of
  Javascript.  
 
-***  COMMENT Nodejs-Repl
- Suppressed for now.
-
- Install from elpa.
- All this from the =nodejs-repl-readme.txt= under elpa.
- #+BEGIN_SRC emacs-lisp
-;; (require 'nodejs-repl)
-;; (setq nodejs-repl-command "nodejs")
-
-;; (add-hook 'js-mode-hook
-;; 		  (lambda ()
-;; 			(define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
-;; 			(define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
-;; 			(define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-;; 			(define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
- #+END_SRC
 *** JS-2 mode
 
  From ELPA.  This is the current working setup.
@@ -904,16 +893,8 @@ Also load the org-mode customizations.
    (add-hook 'org-mode-hook
              (function (lambda ()
                          (load "org-custom"))))
-
-
 #+END_SRC
 
-** Noweb expansion
-
-#+begin_src emacs-lisp
-;;; advice from Thirumal
-(setq org-babel-use-quick-and-dirty-noweb-expansion t)
-#+end_src
 
 * Browser
 ** Browser interaction
