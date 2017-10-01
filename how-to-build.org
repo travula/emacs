@@ -1,37 +1,59 @@
-#+title:  How to build and run my emacs configuration
+#+title:  How to build and run the emacs customization kit
+
 
 * What you need to already have on your machine
 
- - ~emacs-25.x~ is installed ::  It is possible to install a
-      new emacs without destroying your current installation
-      of a different version of emacs.
+ - ~emacs-25.x~ is installed :: emacs-24 will not work.
 
  - ~org-version~ is less than 9.x :: ~emacs-25.2.2~ comes
       with ~org-version 8.2.10~ by default.  (This may not
       be true with later versions of ~emacs~, though.).  
 
-* How to install
+* How to install the customization kit
 
- - 1. Clone the repository :: From  https://gitlab.com/vxcg/prj/emacs/emacs.git.
+ - 1. Clone the repository and =cd= into the working copy
+   directory:
 
- - 2. Run the makefile :: From the top level, run ~make -k all~.
+#+BEGIN_EXAMPLE
+git clone  https://gitlab.com/vxcg/prj/emacs/emacs.git
+cd emacs
+#+END_EXAMPLE
+
+
+ - 2. Run the makefile:
+
+#+BEGIN_EXAMPLE
+make -k all
+#+END_EXAMPLE
+
    
  
-* Result of a successful install
+* What happens after a successful install of the customization kit
+
+Inside your emacs working copy:
 
  - ~build~ :: directory is generated
  - ~build/docs~ :: holds the html docs
  - ~build/code~ :: holds the code 
  - ~build/code/init.el~ :: is the emacs init file
- - ~org-version 8.3.4~ ::  is installed and supercedes any
-      other org version previously installed.
 
-* Launching emacs with the init file
-From the command line, type
+* How to launch emacs with the customization kit
+From the command line from any directory, type
 #+BEGIN_SRC bash :eval no
-emacs -l /path/to/build/code/init.el
+emacs -l /path/to/emacs-working-copy/build/code/init.el
 #+END_SRC
 
-* Packages
-* Git repos
+* How to delete the customization kit
 
+From the command line, type
+
+#+BEGIN_SRC bash :eval no
+\rm -rf /path/to/emacs-working-copy
+#+END_SRC
+
+* Package installed via the customization kit
+
+Note that any packages or any further customizations that
+you install when using this customizations will sit under
+the =elpa= subdirectory of =build/code=.  They will get
+deleted when you delete the customization kit.
