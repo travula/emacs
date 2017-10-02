@@ -1,0 +1,236 @@
+#+title: Specifying and installing packages
+#+SETUPFILE: org-templates/level-0.org
+#+PROPERTY: tangle "./install-packages.el"
+
+* Introduction
+
+This document describes the emacs-lisp script that installs
+packages.  Packages are installed relative to
+=user-emacs-directory=, in the =elpa= subdirectory.
+
+* Preamble
+The banner prints the name of the full path of the =init.el=
+file and then proceeds to initialize key directory
+variables. 
+
+** Banner
+#+BEGIN_SRC emacs-lisp 
+;;; Emacs customization
+;;; Venkatesh Choppella
+;;; <venkatesh.choppella@iiit.ac.in>
+;;; gitlab: @vxc
+#+END_SRC
+
+** Required standard libraries
+
+A standard library is one that comes with the standard emacs
+distribution.
+#+BEGIN_SRC emacs-lisp
+(require 'cl)  ; loaded from emacs distro  
+(require 'package) ; loaded from emacs distro
+(require 'comint)  ; loaded from emacs distro
+#+END_SRC
+
+** Initializing key emacs directories
+
+#+BEGIN_SRC emacs-lisp 
+
+(message "starting evaluation of init file")
+
+
+;;; version of emacs running
+(message "emacs-version = %s" (version))
+
+(defmacro rval (var)
+  "Return the value of symbol VAR if it is bound, else nil."
+  `(and (boundp (quote ,var)) ,var))
+
+;;; load-file-name is the name of the file loaded with the -l option.
+(message "load-file-name = %s" (rval load-file-name))
+
+
+;;; default-directory is where emacs is launched from.
+(message "default-directory = %s" default-directory)
+
+
+;;; user-emacs-dir is bound to the value set at command line, 
+;;; unbound otherwise
+(message "user-emacs-dir = %s" (rval user-emacs-dir))
+
+
+;;; expanded-user-emacs-dir-or-nil is the expanded user-emacs-dir
+;;; if user-emacs-dir is bound, nil otherwise.
+
+(setq expanded-user-emacs-dir-or-nil
+	  (and (rval user-emacs-dir)
+		   (expand-file-name (file-name-as-directory user-emacs-dir))))
+
+(message "expanded-user-emacs-dir-or-nil = %s" expanded-user-emacs-dir-or-nil)
+
+;;; user-emacs-directory is where the user emacs customizations sit.
+;;; E.g., init.el will sit here.
+
+;;; user-emacs-directory is now either
+;;; the expanded user emacs dir, or if that is nil
+;;; the directory of the file loaded from emacs command line.
+(setq user-emacs-directory
+	  (or 
+	   expanded-user-emacs-dir-or-nil ;  % emacs --eval '(setq user-emacs-dir ...) ...
+                                      ; command line 
+	   (and load-file-name   ; %emacs --eval ... -l <filename>
+                             ; command line
+			(file-name-directory load-file-name))
+	   default-directory  ; default dir of emacs buffer if eval'd from
+						  ; emacs
+		  ))
+
+(message "user-emacs-directory = %s" user-emacs-directory)
+
+;;; package-user-dir is the directory where user downloaded packages
+;;; are installed.
+
+;;; 'package sets thi to the elpa subdirectory of the
+;;; user-emacs-directory.
+
+(message "package-user-dir = %s" package-user-dir)
+
+;;; Canonicalise the directory to a fully expanded name.
+(setq package-user-dir
+	  (file-name-as-directory
+;; 	   package-user-dir ; this defaults to ~/.emacs.d/elpa
+	   (concat user-emacs-directory "elpa")
+	   ))
+
+(message "canonicalised package-user-dir = %s" package-user-dir)
+
+;;; package-directory-list is the list of directories searched for
+;;; packages. 
+;;; Its value is set by 'package
+(message "package-directory-list = %s" package-directory-list)
+
+;;; initial value of load
+(message "initial load-path = %s" load-path)
+#+END_SRC
+
+* Package management
+Packages are managed by setting the proxies, archive
+locations and initialization.  The list of selected packages
+are then installed in the =elpa= directories under
+=user-emacs-directory=.
+** Proxies
+#+begin_src emacs-lisp
+(setq url-proxy-services 
+   '(("http"  . "proxy.iiit.ac.in:8080")
+     ("https" . "proxy.iiit.ac.in:8080")))
+#+end_src
+** Package archives and initialization
+#+BEGIN_SRC emacs-lisp
+;;; Package management
+;; (require 'package) 
+;;; default value
+;;; (("gnu" . "http://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives 
+	     '("org" . "http://orgmode.org/elpa/") t)
+(package-initialize)
+#+END_SRC
+
+** List of packages selected for installation
+#+BEGIN_SRC emacs-lisp
+(setq package-selected-packages 
+	  (append 
+	   '(
+		alert
+		async
+		bbdb
+		biblio
+		biblio-core
+		calfw-gcal
+		dash
+		dash-functional
+		deferred
+		edit-server
+		edit-server-htmlize
+		f
+		faceup
+		git-commit-mode
+		git-rebase-mode
+		gntp
+		ham-mode
+		helm
+		helm-bibtex
+		helm-core
+		html-to-markdown
+		hydra
+		ivy
+		js2-mode
+		js3-mode
+		js-comint
+		key-chord
+		log4e
+		magit
+		markdown-mode
+		nodejs-repl
+		nvm
+		openwith
+		org
+		org-gcal
+		org-journal
+        org-ref
+		org-tree-slide
+		ox-reveal
+		parsebib
+		pdf-tools
+		popup
+		racket-mode
+		request
+		request-deferred
+		s
+		smex
+		tablist
+		tern
+		web-mode
+		)
+	  package-selected-packages
+	  ))
+#+END_SRC
+
+** Refreshing package info
+Run this occasionally to refresh package info
+#+BEGIN_SRC emacs-lisp
+;; download descriptions of elpa packages
+(package-refresh-contents)
+#+END_SRC
+
+** Installing selected packages
+
+Run these commands from inside emacs when you are online.
+#+BEGIN_SRC emacs-lisp
+;;; this advice allows package-install-selected-packages to 
+;;; do its work silently, without prompting
+;;; see
+;;; https://stackoverflow.com/questions/6591043/how-to-answer-yes-or-no-automatically-in-emacs
+(require 'cl-lib)
+
+;; flet is obsolete ...  
+;; (defadvice package-install-selected-packages (around always-yes activate)
+;;       (flet ((yes-or-no-p (&rest args) t)
+;;              (y-or-n-p (&rest args) t))
+;;         ad-do-it))
+
+
+;;; see also http://endlessparentheses.com/understanding-letf-and-how-it-replaces-flet.html
+;;; to replace flet with cl-letf
+
+(defadvice package-install-selected-packages (around always-yes activate)
+      (cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest args) t))
+				((symbol-function 'y-or-n-p) (lambda (&rest args) t)))
+        ad-do-it))
+
+(package-install-selected-packages)
+#+END_SRC
+
+The selected packages are installed in
+=package-user-dir=.
+

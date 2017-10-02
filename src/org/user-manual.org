@@ -1,0 +1,67 @@
+#+title:  How to build and run the emacs customization kit
+#+setupfile:  org-templates/level-0.org
+
+* Introduction
+
+This manual describes how to clone, build, install and run
+Venkatesh's emacs customization kit.  Each of these is  driven
+by =make=, which is to be run from the directory to which
+the customization kit has been cloned. 
+
+** Modular installation
+The installation of the customization is modular.
+Everything is installed in one directory, which is different
+from your default user emacs directory (typically
+=~/.emacs.d=).  
+
+The =make -k emacs= is the best way to keep the usage
+compartmentalized.  If you wish to delete the customization,
+simply =rm -rf= the installation directory.
+
+
+
+* Installation and usage Steps
+
+** Clone git repository
+This clones the customization repository into a local
+repository (called =emacs=). 
+
+#+BEGIN_EXAMPLE
+git clone  https://gitlab.com/vxcg/prj/emacs/emacs.git
+cd emacs
+#+END_EXAMPLE
+
+** Build =.el= files
+
+This tangles out =.el= files from the =.org= sources. 
+
+#+BEGIN_EXAMPLE
+make -k build
+#+END_EXAMPLE
+
+** Install packages
+
+This installs packages.  The list of packages is available
+from the file [[./package-install.org]].   You may wish to edit
+the list in that file.
+
+#+BEGIN_EXAMPLE
+make -k install
+#+END_EXAMPLE
+
+** Run emacs
+
+This will run =emacs= using the local customization.
+
+#+BEGIN_EXAMPLE
+make -k emacs &
+#+END_EXAMPLE
+
+* What you need to already have on your machine
+
+ - ~emacs-25.x~ is installed :: emacs-24 will not work.
+
+ - ~org-version~ is less than 9.x :: ~emacs-25.2.2~ comes
+      with ~org-version 8.2.10~ by default.  (This may not
+      be true with later versions of ~emacs~, though.).  
+

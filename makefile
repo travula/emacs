@@ -1,14 +1,13 @@
-BUILD_DIR=build
+TOP=${CURDIR}
+BUILD_DIR=${TOP}/build
 CODE_DIR=${BUILD_DIR}/code
-DOC_DIR=${BUILD}/docs
+DOC_DIR=${BUILD_DIR}/docs
 VER_FILE=${BUILD_DIR}/VERSION
 EMACS=emacs-25.2
 # note that emacs-25.2 comes with org-8.2.10
 
-all:  build
-
 build: init write-version
-	${EMACS}  --script elisp/publish.el
+	${EMACS}  --script ${TOP}/elisp/publish.el
 
 
 init:
@@ -34,3 +33,9 @@ emacs-version:
 	echo -n "and org version      : " >> ${VER_FILE}
 	- echo `${EMACS} -q --batch --eval '(princ (org-version))'` >> ${VER_FILE}
 
+
+install:
+	${EMACS} -q --batch -l ${CODE_DIR}/install-packages.el
+
+emacs:
+	${EMACS} -q  -l ${CODE_DIR}/init.el

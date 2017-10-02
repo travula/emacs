@@ -1,0 +1,108 @@
+#+title: Preamble
+#+SETUPFILE: org-templates/level-0.org
+#+PROPERTY: tangle "./preamble.el"
+
+* Preamble
+The banner prints the name of the full path of the =init.el=
+file and then proceeds to initialize key directory
+variables. 
+
+** Banner
+#+BEGIN_SRC emacs-lisp 
+;;; Emacs customization
+;;; Venkatesh Choppella
+;;; <venkatesh.choppella@iiit.ac.in>
+;;; gitlab: @vxc
+#+END_SRC
+
+** Required standard libraries
+
+A standard library is one that comes with the standard emacs
+distribution.
+#+BEGIN_SRC emacs-lisp
+(require 'cl)  ; loaded from emacs distro  
+(require 'package) ; loaded from emacs distro
+(require 'comint)  ; loaded from emacs distro
+#+END_SRC
+
+** Initializing key emacs directories
+
+#+BEGIN_SRC emacs-lisp 
+
+(message "starting evaluation of init file")
+
+
+;;; version of emacs running
+(message "emacs-version = %s" (version))
+
+(defmacro rval (var)
+  "Return the value of symbol VAR if it is bound, else nil."
+  `(and (boundp (quote ,var)) ,var))
+
+;;; load-file-name is the name of the file loaded with the -l option.
+(message "load-file-name = %s" (rval load-file-name))
+
+
+;;; default-directory is where emacs is launched from.
+(message "default-directory = %s" default-directory)
+
+
+;;; user-emacs-dir is bound to the value set at command line, 
+;;; unbound otherwise
+(message "user-emacs-dir = %s" (rval user-emacs-dir))
+
+
+;;; expanded-user-emacs-dir-or-nil is the expanded user-emacs-dir
+;;; if user-emacs-dir is bound, nil otherwise.
+
+(setq expanded-user-emacs-dir-or-nil
+	  (and (rval user-emacs-dir)
+		   (expand-file-name (file-name-as-directory user-emacs-dir))))
+
+(message "expanded-user-emacs-dir-or-nil = %s" expanded-user-emacs-dir-or-nil)
+
+;;; user-emacs-directory is where the user emacs customizations sit.
+;;; E.g., init.el will sit here.
+
+;;; user-emacs-directory is now either
+;;; the expanded user emacs dir, or if that is nil
+;;; the directory of the file loaded from emacs command line.
+(setq user-emacs-directory
+	  (or 
+	   expanded-user-emacs-dir-or-nil ;  % emacs --eval '(setq user-emacs-dir ...) ...
+                                      ; command line 
+	   (and load-file-name   ; %emacs --eval ... -l <filename>
+                             ; command line
+			(file-name-directory load-file-name))
+	   default-directory  ; default dir of emacs buffer if eval'd from
+						  ; emacs
+		  ))
+
+(message "user-emacs-directory = %s" user-emacs-directory)
+
+;;; package-user-dir is the directory where user downloaded packages
+;;; are installed.
+
+;;; 'package sets thi to the elpa subdirectory of the
+;;; user-emacs-directory.
+
+(message "package-user-dir = %s" package-user-dir)
+
+;;; Canonicalise the directory to a fully expanded name.
+(setq package-user-dir
+	  (file-name-as-directory
+;; 	   package-user-dir ; this defaults to ~/.emacs.d/elpa
+	   (concat user-emacs-directory "elpa")
+	   ))
+
+(message "canonicalised package-user-dir = %s" package-user-dir)
+
+;;; package-directory-list is the list of directories searched for
+;;; packages. 
+;;; Its value is set by 'package
+(message "package-directory-list = %s" package-directory-list)
+
+;;; initial value of load
+(message "initial load-path = %s" load-path)
+#+END_SRC
+

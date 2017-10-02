@@ -9,6 +9,11 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+STARTUP: hidestars
 
+#+PROPERTY: session *scratch*
+#+PROPERTY: results output
+#+PROPERTY: eval no
+#+PROPERTY: exports code
+
 
 #+HTML_LINK_UP: ./index.html
 #+HTML_LINK_HOME: ./index.html

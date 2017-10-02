@@ -99,3 +99,48 @@ https://www.emacswiki.org/emacs/LoadPath
 
 * Structure of init-file
 
+* Progress
+
+** [2017-10-01 Sun]  
+
+Customization works with org-9.1.1!
+
+
+Right now, in the init.el file, there are require directives
+that need the installation of packages.  Since package
+install is suppressed in the init file, this causes errors
+unless packages are already installed. 
+
+
+To solve this problem, we propose that 
+
+ - 1. packages be installed as part of an additional make
+   process.
+
+ - 2. then, when emacs starts, packages are installed and
+   requires get resolved. 
+
+
+#+BEGIN_EXAMPLE
+make tangle
+make install-packages  # this needs the net and could take long.
+emacs -q -l .../code/init.el  # packages already installed.
+#+END_EXAMPLE 
+* Controlling addition of Custom fields
+
+https://www.reddit.com/r/emacs/comments/53zpv9/how_do_i_get_emacs_to_stop_adding_custom_fields/
+
+* Calling an interactive function non-interactively
+https://emacs.stackexchange.com/questions/32753/call-interactive-function-from-elisp-code-without-worrying-about-arguments/32756
+
+
+* Passing minibuffer input automatically to an interactive function
+
+https://emacs.stackexchange.com/questions/10393/how-can-i-answer-a-minibuffer-prompt-from-elisp
+
+* how to answer yes or no automatically in emacs
+https://stackoverflow.com/questions/6591043/how-to-answer-yes-or-no-automatically-in-emacs
+
+* understanding  cl-letf and how it replaces flet
+
+http://endlessparentheses.com/understanding-letf-and-how-it-replaces-flet.html
