@@ -38,11 +38,11 @@
 ;;        load-path))
 
 (require 'org)
-(require 'ob-tangle)
+;; (require 'ob-tangle)
 (require 'ob-sh)
 (setq org-babel-load-languages 
-	  '((sh . t)
-		(emacs-lisp . t))) 
+ 	  '((sh . t)
+ 		(emacs-lisp . t))) 
 
 
 (load-file "./elisp/tangle-with-publish-dir.el")
