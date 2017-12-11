@@ -1,0 +1,123 @@
+#+TITLE: Installation of Emacs 25.2
+#+AUTHOR: VLEAD
+#+DATE: [2017-12-07 Thu]
+# #+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+  This document enumerates the steps to install emacs 25.2
+  in user path.
+
+* Assumption
+  These steps are tested on Ubuntu 16.04
+
+* Installation 
+
+  1. Create and change to the directory where the
+     installation of emacs has to sit.  This tutorial
+     installs in =~/emacs-25.2= directory.
+	 #+BEGIN_EXAMPLE
+	 mkdir -p ~/emacs-25.2
+	 cd ~/emacs-25.2
+	 #+END_EXAMPLE
+
+  2. Download the tar file containing emacs 25.2
+     distribution from any of the [[https://www.gnu.org/software/emacs/download.html][mirror]] sites.
+	 #+BEGIN_EXAMPLE
+	 wget <url path> .
+	 #+END_EXAMPLE
+
+  3. Untar the files 
+	 #+BEGIN_EXAMPLE
+	 tar xvf emacs-25.2.tar.xz 
+	 #+END_EXAMPLE
+
+  4. Create a directory with the name =bin= in the current
+     directory
+	 #+BEGIN_EXAMPLE
+	 mkdir -p ~/emacs-25.2/bin
+	 #+END_EXAMPLE
+
+  5. Install dependencies, [[reference]], install the
+     dependencies libc6-dev libjpeg62-dev libncurses5-dev
+     libpng-dev libtiff3g-dev libungif4-dev xaw3dg-dev
+     zlib1g-dev xlibs-dev
+
+	 #+BEGIN_EXAMPLE
+	 sudo apt-get install libc6-dev libjpeg62-dev libncurses5-dev 
+	 sudo apt-get install libpng-dev libtiff3g-dev libungif4-dev 
+	 sudo apt-get install xaw3dg-dev zlib1g-dev xlibs-dev
+     sudo apt-get install build-essential texinfo libx11-dev libxpm-dev 
+     sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev 
+     sudo apt-get install libgtk2.0-dev libncurses-dev
+     sudo apt-get install libxpm-dev libgif-dev
+     sudo apt-get install gtk
+     sudo apt-get install build-essential texinfo libx11-dev libxpm-dev 
+     sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev 
+     sudo apt-get install libgtk2.0-dev libncurses-dev
+	 sudo apt-get install libjpeg libtiff
+	 sudo apt-get install libtiff-tools
+	 sudo apt-get install libjpeg-dev
+	 sudo apt-get install libgtk-3-dev
+	 sudo apt-get install libtiff5
+     sudo apt-get install libtinfo
+     sudo apt-get install build-essential
+     sudo apt-get install build-dep
+     sudo apt-get install libtinfo-dev                                                           
+
+     #+END_EXAMPLE
+
+  6. Install at the given directory, [[https://superuser.com/a/638016][reference]]
+	 #+BEGIN_EXAMPLE
+	 ./configure --prefix=~/emacs-25.2 --bindir=~/emacs-25.2/bin
+	 #+END_EXAMPLE
+
+  7. Make
+	 #+BEGIN_EXAMPLE
+	 make
+	 #+END_EXAMPLE
+
+  8. Check whether emacs is installed
+	 #+BEGIN_EXAMPLE
+	 src/emacs -Q
+	 #+END_EXAMPLE
+
+  9. Make the installation permanent
+	 #+BEGIN_EXAMPLE
+	 make install
+	 #+END_EXAMPLE
+
+  10. Clean up
+	  #+BEGIN_EXAMPLE
+	  make clean
+	  make distclean
+	  #+END_EXAMPLE
+
+  11. Clean up the files
+	  #+BEGIN_EXAMPLE
+	  cd ..
+      rm -rf emacs-25.2 emacs-25.2.tar.xz 
+	  #+END_EXAMPLE
+
+  12. Make a symbolic link to the executable
+	  #+BEGIN_EXAMPLE
+	  cd bin
+	  ln -s emacs-25.1 emacs25
+	  #+END_EXAMPLE
+
+  13. Add to the path, open the file =~/.bashrc= and add the
+      following line
+	  #+BEGIN_EXAMPLE
+	  export PATH="$PATH:~/emacs-25.2/bin"
+	  #+END_EXAMPLE
+
+  14. Access emacs25, source =~/.bashrc= 
+	  #+BEGIN_EXAMPLE
+	  emacs25
+	  #+END_EXAMPLE
+
+
+
+

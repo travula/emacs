@@ -35,6 +35,7 @@
 			    (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
 			    (local-set-key "\C-cl" 'js-load-file-and-go)
 			    ))
+(add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
 
 (defun javascript-mode-custom-setup ()
   (autoload 'javascript-shell "javascript-shell"
