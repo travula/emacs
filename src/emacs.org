@@ -104,7 +104,7 @@
   12. Make a symbolic link to the executable
 	  #+BEGIN_EXAMPLE
 	  cd bin
-	  ln -s emacs-25.1 emacs25
+	  ln -s emacs-25.2 emacs25
 	  #+END_EXAMPLE
 
   13. Add to the path, open the file =~/.bashrc= and add the
