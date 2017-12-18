@@ -1,3 +1,4 @@
+
 #+TITLE: Installation of Emacs 25.2
 #+AUTHOR: VLEAD
 #+DATE: [2017-12-07 Thu]
@@ -24,7 +25,7 @@
 	 #+END_EXAMPLE
 
   2. Download the tar file containing emacs 25.2
-     distribution from any of the [[http://ftp.gnu.org/gnu/emacs/][mirror]] sites.
+     distribution from any of the [[https://www.gnu.org/software/emacs/download.html][mirror]] sites.
 	 #+BEGIN_EXAMPLE
 	 wget <url path> .
 	 #+END_EXAMPLE
@@ -61,27 +62,26 @@
 
 
 
-	 sudo apt-get install libc6-dev libjpeg62-dev libncurses5-dev (libjpeg62-dev not working)
-	 sudo apt-get install libpng-dev libtiff3g-dev libungif4-dev (libungif4-dev not working)
-	 sudo apt-get install xaw3dg-dev zlib1g-dev xlibs-dev (xlibs-dev not working)
-	 sudo apt-get install build-essential texinfo libx11-dev libxpm-dev /working
-	 sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev /working
-	 sudo apt-get install libgtk2.0-dev libncurses-dev /working
-	 sudo apt-get install libxpm-dev libgif-dev /working
-
-	 sudo apt-get install gtk /not working
-	 sudo apt-get install build-essential texinfo libx11-dev libxpm-dev /already done
-	 sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev /already don
-	 sudo apt-get install libgtk2.0-dev libncurses-dev/already done
-	 sudo apt-get install libjpeg libtiff/not working
-	 sudo apt-get install libtiff-tools /working
-	 sudo apt-get install libjpeg-dev/already installed
-	 sudo apt-get install libgtk-3-dev/working
-	 sudo apt-get install libtiff5/already install
-	 sudo apt-get install libtinfo/not working
-	 sudo apt-get install build-essential /already install
-	 sudo apt-get install build-dep /not working
-	 sudo apt-get install libtinfo-dev /already installed                                                          
+	 # sudo apt-get install libc6-dev libjpeg62-dev libncurses5-dev # libjpeg62-dev is not working
+	 # sudo apt-get install libpng-dev libtiff3g-dev libungif4-dev # libungif4-dev is not working
+	 # sudo apt-get install xaw3dg-dev zlib1g-dev xlibs-dev # xlibs-dev is not working
+	 # sudo apt-get install build-essential texinfo libx11-dev libxpm-dev # working
+	 # sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev #working
+	 # sudo apt-get install libgtk2.0-dev libncurses-dev #working
+	 # sudo apt-get install libxpm-dev libgif-dev #working
+	 # sudo apt-get install gtk # not working
+	 # sudo apt-get install build-essential texinfo libx11-dev libxpm-dev # already installed
+	 # sudo apt-get install libjpeg-dev libpng-dev libgif-dev libtiff-dev # already installed
+	 # sudo apt-get install libgtk2.0-dev libncurses-dev # already installed
+	 # sudo apt-get install libjpeg libtiff # not working
+	 # sudo apt-get install libtiff-tools # working
+	 # sudo apt-get install libjpeg-dev # already installed
+	 # sudo apt-get install libgtk-3-dev # working
+	 # sudo apt-get install libtiff5 # already installed
+	 # sudo apt-get install libtinfo # not working
+	 # sudo apt-get install build-essential //already installed
+	 # sudo apt-get install build-dep //not working
+	 # sudo apt-get install libtinfo-dev //already installed                                                          
 
      #+END_EXAMPLE
 
