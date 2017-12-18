@@ -40,7 +40,7 @@
 	 mkdir -p ~/emacs-25.2/bin
 	 #+END_EXAMPLE
 
-  5. Install dependencies, [[reference]], install the
+  5. Install dependencies, [[https://www.emacswiki.org/emacs/BuildingEmacs][reference]], install the
      dependencies libc6-dev libjpeg62-dev libncurses5-dev
      libpng-dev libtiff3g-dev libungif4-dev xaw3dg-dev
      zlib1g-dev xlibs-dev
