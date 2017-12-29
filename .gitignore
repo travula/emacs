@@ -69,3 +69,8 @@ Thumbs.db
 build/*
 src/git/*
 src/elpa
+sitemap.org
+*~
+#*#
+#*
+*#

@@ -268,7 +268,7 @@ are added to the front.
 
 ;; (set-face-attribute 'default nil :height 120)
  (add-hook 'after-change-major-mode-hook 
- 	  (lambda ()  (text-scale-set 3)))
+ 	  (lambda ()  (text-scale-set 2.5)))
 #+END_SRC
 
 ** Mode line
@@ -373,6 +373,8 @@ are added to the front.
 ;;; edebug
 (setq edebug-trace t)
 
+;; Don't use TABS for indentations.
+(setq-default indent-tabs-mode nil)
 ;; won't beep anymore.
 (setq visible-bell t)
 
@@ -445,7 +447,7 @@ are added to the front.
 (setq ispell-dictionary "en")
 
 ;; British English
-(ispell-change-dictionary "british" t)
+(ispell-change-dictionary "american" t)
 
 
 ;;; Turn on flyspell mode
@@ -584,18 +586,23 @@ Code from 1995! (Thanks, Anurag!)
 ;;; custom racket-support.el defined here
 (setq racket-racket-program
       ; "~/apps/racket/racket-6.1.1/bin/racket"
-	  "~/apps/racket/racket-6.7/bin/racket"
+      ; "~/apps/racket/racket-6.7/bin/racket"
+	  "/home/travula/racket/bin/"
 )
 
 (setq racket-raco-program
       ; "~/apps/racket/racket-6.1.1/bin/raco"
-       "~/apps/racket/racket-6.7/bin/raco"
+      ; "~/apps/racket/racket-6.7/bin/raco"
+	  "/home/travula/racket/bin/"
 )
 
 
 (add-hook 'racket-mode-hook 
 	  (function (lambda ()
 		      (load "racket-support"))))
+
+(add-hook 'scheme-mode-hook 'racket-mode)
+
  #+END_SRC
 ** Javascript mode
 
@@ -641,7 +648,8 @@ Code from 1995! (Thanks, Anurag!)
             (local-set-key (kbd "C-M-x") 'js-send-last-sexp-and-go)
             (local-set-key (kbd "C-c b") 'js-send-buffer)
             (local-set-key (kbd "C-c C-b") 'js-send-buffer-and-go)
-            (local-set-key (kbd "C-c l") 'js-load-file-and-go)))
+            (local-set-key (kbd "C-c l") 'js-load-file-and-go)
+			(setq js-indent-level 2)))
 
 ;;; enable nvm support, 
 ;;; see https://github.com/redguardtoo/js-comint
@@ -808,7 +816,8 @@ Also load the org-mode customizations.
 (setq browse-url-browser-function 
   'browse-url-generic)
 
-(setq browse-url-generic-program "/usr/bin/google-chrome")
+;;(setq browse-url-generic-program "/usr/bin/google-chrome")
+(setq browse-url-generic-program "/usr/bin/chromium-browser")
 
 #+END_SRC
 
@@ -893,7 +902,7 @@ This  should be the last section in the emacs init file.
 ** Key unbindings
 #+BEGIN_SRC emacs-lisp
 ;; Goodbye RMAIL
-(global-unset-key "\C-xr")
+;;(global-unset-key "\C-xr")
 (global-unset-key "\C-xm")
 #+END_SRC
 

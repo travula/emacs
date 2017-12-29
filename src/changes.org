@@ -1,0 +1,14 @@
+
+* File src/org/init.org
+** Font size
+   1. Changed the text scale to 2.5 from 3.0.  This is in
+      file src/org/init.org.  The variable text-scale-set is
+      set to 2.5.
+   2. [[https://www.emacswiki.org/emacs/SetFonts][Reference]] section =Resize Frame Font using Lisp=
+** Set the program to browse a url
+   1. Changed the program to browse a url.  The variable
+      =browse-url-generic-program= is set to
+      =/usr/bin/chromium-browser=.
+   2. [[https://www.emacswiki.org/emacs/BrowseUrl][Reference]]
+** Set indentation level in JS to 2
+   set =setq js-indent-level 2= when js2 mode is activated.
