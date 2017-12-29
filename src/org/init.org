@@ -268,7 +268,7 @@ are added to the front.
 
 ;; (set-face-attribute 'default nil :height 120)
  (add-hook 'after-change-major-mode-hook 
- 	  (lambda ()  (text-scale-set 2.5)))
+ 	  (lambda ()  (text-scale-set 2.0)))
 #+END_SRC
 
 ** Mode line
