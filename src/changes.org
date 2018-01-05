@@ -12,3 +12,4 @@
    2. [[https://www.emacswiki.org/emacs/BrowseUrl][Reference]]
 ** Set indentation level in JS to 2
    set =setq js-indent-level 2= when js2 mode is activated.
+** Set the racket path to the one on my machine
