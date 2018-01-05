@@ -587,13 +587,13 @@ Code from 1995! (Thanks, Anurag!)
 (setq racket-racket-program
       ; "~/apps/racket/racket-6.1.1/bin/racket"
       ; "~/apps/racket/racket-6.7/bin/racket"
-	  "/home/travula/racket/bin/"
+	  "/home/travula/racket/bin/racket"
 )
 
 (setq racket-raco-program
       ; "~/apps/racket/racket-6.1.1/bin/raco"
       ; "~/apps/racket/racket-6.7/bin/raco"
-	  "/home/travula/racket/bin/"
+	  "/home/travula/racket/bin/raco"
 )
 
 
