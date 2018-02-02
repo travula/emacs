@@ -1,0 +1,13 @@
+
+* Introduction
+  The problems encountered in customizing emacs with the
+  base taken from Venkatesh are listed here. 
+* Load path of elpa packages
+  How are the elpa packages loaded.  =load-path= does not
+  say anything about =elpa=.  Does =package-user-dir= ensure
+  this?  It does
+
+* User Defined Tags
+  User defined tags are getting loaded initially.  The fix
+  is to load =org= before the tags are set. 
+

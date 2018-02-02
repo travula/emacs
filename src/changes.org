@@ -13,3 +13,26 @@
 ** Set indentation level in JS to 2
    set =setq js-indent-level 2= when js2 mode is activated.
 ** Set the racket path to the one on my machine
+** Insert headers
+   User defined tags.  Typing =<head= and =tab= will insert
+   the header.  Typing =<prop= and =tab= will insert custom
+   id. 
+#+BEGIN_EXAMPLE
+(require 'org)
+(add-to-list 'org-structure-template-alist 
+             '("head" 
+               "#+TITLE: ?
+#+AUTHOR:VLEAD
+#+DATE:
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil\n"))
+
+(add-to-list 'org-structure-template-alist
+             '("prop"
+               ":PROPERTIES:
+:CUSTOM_ID: 
+:END:"))
+
+#+END_EXAMPLE

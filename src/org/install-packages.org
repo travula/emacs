@@ -119,9 +119,9 @@ are then installed in the =elpa= directories under
 =user-emacs-directory=.
 ** Proxies
 #+begin_src emacs-lisp
-(setq url-proxy-services 
-   '(("http"  . "proxy.iiit.ac.in:8080")
-     ("https" . "proxy.iiit.ac.in:8080")))
+;; (setq url-proxy-services 
+;;    '(("http"  . "proxy.iiit.ac.in:8080")
+;;      ("https" . "proxy.iiit.ac.in:8080")))
 #+end_src
 ** Package archives and initialization
 #+BEGIN_SRC emacs-lisp
@@ -191,6 +191,9 @@ are then installed in the =elpa= directories under
 		tablist
 		tern
 		web-mode
+        scala-mode
+        sbt-mode
+        ensime
 		)
 	  package-selected-packages
 	  ))

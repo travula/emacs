@@ -790,6 +790,19 @@ is deemed to be a prompt, and is not reexecuted.")
 (setq bibtex-completion-pdf-field "File") ; use pdf
  #+END_SRC
 
+** HTML Mode
+
+   Reference for [[http://web-mode.org/][web-mode]]
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+
+#+END_SRC
+   
 * Abbrevs
 
 See http://www.emacswiki.org/emacs/AbbrevMode
@@ -917,4 +930,24 @@ This  should be the last section in the emacs init file.
 (message "finishing init.el")
 (message "load-path = %s" (pprint-load-path))
 (message "exiting init.el")
+#+END_SRC
+* Custom Tags
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+(add-to-list 'org-structure-template-alist 
+             '("head" 
+               "#+TITLE: ?
+#+AUTHOR:VLEAD
+#+DATE:
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil\n"))
+
+(add-to-list 'org-structure-template-alist
+             '("prop"
+               ":PROPERTIES:
+:CUSTOM_ID: 
+:END:"))
+
 #+END_SRC
